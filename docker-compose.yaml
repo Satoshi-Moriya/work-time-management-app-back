@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: wtm-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: y2023m06l26qs
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: wtmdb
+      MYSQL_USER: wtm_user
+      MYSQL_PASSWORD: wtm_pass
+    ports:
+      - 3306:3306
+    volumes:
+      - ./sql/init:/docker-entrypoint-initdb.d
+      - ./sql/my.cnf:/mysql/conf.d/my.cnf
