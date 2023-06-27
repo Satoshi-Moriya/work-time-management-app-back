@@ -6,11 +6,11 @@ services:
     container_name: wtm-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: y2023m06l26qs
+      MYSQL_ROOT_PASSWORD: ${ROOTPASS}
       MYSQL_PORT: 3306
-      MYSQL_DATABASE: wtmdb
-      MYSQL_USER: wtm_user
-      MYSQL_PASSWORD: wtm_pass
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${USERNAME}
+      MYSQL_PASSWORD: ${USERPASS}
     ports:
       - 3306:3306
     volumes:
