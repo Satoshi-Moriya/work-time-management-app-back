@@ -29,13 +29,13 @@ class WorkLogControllerTest {
     @Test
     fun `api「work-logs」を呼んだときにステータス200が返る`() {
         mockMvc.perform(get("/work-logs")
-            .param("start", "20230601")
-            .param("end", "20230630"))
+            .param("from", "20230601")
+            .param("to", "20230630"))
             .andExpect(status().isOk)
     }
 
     @Test
-    fun `クエリパラメータにstartとendの数値を入れた時、getSelectedMonthlyWorkLogにそれぞれの数値が引数に入り実行されている`() {
+    fun `クエリパラメータにfromとtoの数値を入れた時、getSelectedMonthlyWorkLogにそれぞれの数値が引数に入り実行されている`() {
 
         `when`(mockWorkLogService.findByBetweenYearAndMonth("20230601", "20230630"))
             .thenReturn(listOf(
@@ -44,8 +44,8 @@ class WorkLogControllerTest {
             ))
 
         mockMvc.perform(get("/work-logs")
-            .param("start", "20230601")
-            .param("end", "20230630"))
+            .param("from", "20230601")
+            .param("to", "20230630"))
             .andExpect(jsonPath("$[0].workLogId").value(1))
             .andExpect(jsonPath("$[0].workLogUserId").value(1))
             .andExpect(jsonPath("$[0].workLogDate").value("2023-06-01"))
