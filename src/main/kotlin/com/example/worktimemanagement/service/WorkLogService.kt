@@ -10,17 +10,17 @@ const val INSERT_HYPHEN_POSITION2 = 7
 @Service
 class WorkLogService(val workLogRepository: WorkLogRepository) {
 
-    fun findByBetweenYearAndMonth(startDate: String, endDate: String): List<WorkLog> {
-        val modifiedStartDate = StringBuilder(startDate)
+    fun findByBetweenYearAndMonth(fromDate: String, toDate: String): List<WorkLog> {
+        val modifiedFromDate = StringBuilder(fromDate)
             .apply {
                 insert(INSERT_HYPHEN_POSITION1, "-")
                 insert(INSERT_HYPHEN_POSITION2, "-")
             }.toString()
-        val modifiedEndDate = StringBuilder(endDate)
+        val modifiedToDate = StringBuilder(toDate)
             .apply {
                 insert(INSERT_HYPHEN_POSITION1, "-")
                 insert(INSERT_HYPHEN_POSITION2, "-")
             }.toString()
-        return workLogRepository.findByBetweenYearAndMonth(modifiedStartDate, modifiedEndDate)
+        return workLogRepository.findByBetweenYearAndMonth(modifiedFromDate, modifiedToDate)
     }
 }

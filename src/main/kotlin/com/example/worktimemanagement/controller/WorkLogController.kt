@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 // テストリクエスト
-// curl --location --request GET 'http://localhost:8080/work-logs?start=20230601&end=20230630'
+// curl --location --request GET 'http://localhost:8080/work-logs?from=20230601&to=20230630'
 
 @RestController
 class WorkLogController(val workLogService: WorkLogService) {
 
     @GetMapping("/work-logs")
-    fun getSelectedMonthlyWorkLog(@RequestParam("start") startDate: String, @RequestParam("end") endDate: String): List<WorkLog> {
-        return workLogService.findByBetweenYearAndMonth(startDate, endDate)
+    fun getSelectedMonthlyWorkLog(@RequestParam("from") fromDate: String, @RequestParam("to") toDate: String): List<WorkLog> {
+        return workLogService.findByBetweenYearAndMonth(fromDate, toDate)
     }
 }
