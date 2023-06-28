@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 // テストリクエスト
-// curl --location --request GET 'http://localhost:8080/worklogs?start=20230601&end=20230630'
+// curl --location --request GET 'http://localhost:8080/work-logs?start=20230601&end=20230630'
 
 @RestController
 class WorkLogController(val workLogService: WorkLogService) {
