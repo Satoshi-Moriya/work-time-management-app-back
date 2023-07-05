@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param
 
 interface WorkLogRepository : CrudRepository<WorkLog, Int> {
 
-    @Query("SELECT wl FROM WorkLog wl WHERE wl.workLogDate BETWEEN :fromDate AND :toDate")
-    fun findByBetweenYearAndMonth(@Param("fromDate") fromDate: String, @Param("toDate") toDate: String): List<WorkLog>
+    @Query("SELECT wl FROM WorkLog wl WHERE wl.workLogUserId = :userId AND wl.workLogDate BETWEEN :fromDate AND :toDate")
+    fun findByBetweenYearAndMonth(@Param("userId") userId: Int, @Param("fromDate") fromDate: String, @Param("toDate") toDate: String): List<WorkLog>
 }
