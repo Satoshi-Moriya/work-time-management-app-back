@@ -35,3 +35,8 @@ INSERT INTO work_logs
   (work_log_id, work_log_user_id, work_log_date, work_log_start_time, work_log_end_time, work_log_seconds)
 VALUES
   (0, 2, "2023-06-26", "2023-06-26 13:00:00", "2023-06-26 17:00:03", 14403);
+
+INSERT INTO work_logs
+  (work_log_id, work_log_user_id, work_log_date, work_log_start_time, work_log_end_time, work_log_seconds)
+VALUES
+  (0, 1, "2023-07-01", "2023-07-01 13:00:00", "2023-07-01 17:00:00", 14400);
