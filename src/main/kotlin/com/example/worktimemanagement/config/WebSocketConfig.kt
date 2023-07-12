@@ -11,8 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
         registry.setApplicationDestinationPrefixes("/app")
-        registry.enableSimpleBroker("/chatroom", "/user")
-        registry.setUserDestinationPrefix("/user")
+        registry.enableSimpleBroker("/display", "/chatroom")
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {

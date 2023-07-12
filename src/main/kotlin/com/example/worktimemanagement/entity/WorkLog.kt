@@ -13,7 +13,7 @@ data class WorkLog (
     @Id
     @Column(name = "work_log_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val workLogId: Int,
+    val workLogId: Int?,
 
     @Column(name = "work_log_user_id")
     val workLogUserId: Int,
