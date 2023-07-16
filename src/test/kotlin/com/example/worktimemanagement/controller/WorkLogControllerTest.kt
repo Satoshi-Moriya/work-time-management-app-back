@@ -31,7 +31,7 @@ class WorkLogControllerTest {
     private lateinit var mockWorkLogService: WorkLogService
 
     @Test
-    fun `api「work-logs」を呼んだときにステータス200が返る`() {
+    fun `GET「work-logs」が呼ばれたときにステータス200が返ってくる`() {
         mockMvc.perform(get("/work-logs/user-id/1")
             .param("from", "20230601")
             .param("to", "20230630"))
@@ -39,7 +39,7 @@ class WorkLogControllerTest {
     }
 
     @Test
-    fun `クエリパラメータにfromとtoの数値を入れた時、getSelectedMonthlyWorkLogにそれぞれの数値が引数に入り実行されている`() {
+    fun `GET「work-logs」が呼ばれたときにfindByBetweenYearAndMonth()が実行されて、指定したuserと指定した年月のデータが返ってくる`() {
 
         `when`(mockWorkLogService.findByBetweenYearAndMonth(1,"20230601", "20230630"))
             .thenReturn(listOf(
