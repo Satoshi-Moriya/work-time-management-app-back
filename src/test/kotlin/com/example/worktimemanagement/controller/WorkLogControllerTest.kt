@@ -4,31 +4,39 @@ import com.example.worktimemanagement.entity.WorkLog
 import com.example.worktimemanagement.service.WorkLogService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.springframework.beans.factory.annotation.Autowired
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-
-@ExtendWith(SpringExtension::class)
-@SpringBootTest
+@ExtendWith(MockitoExtension::class)
 @AutoConfigureMockMvc
 class WorkLogControllerTest {
 
-    @Autowired
+    @Mock
     private lateinit var mockMvc: MockMvc
-    @MockBean
+
+    @Mock
     private lateinit var mockWorkLogService: WorkLogService
+
+    @InjectMocks
+    private lateinit var workLogController: WorkLogController
+
+    @BeforeEach
+    fun setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(workLogController).build()
+    }
 
     @Test
     fun `GET「work-logs」が呼ばれたときにステータス200が返ってくる`() {
