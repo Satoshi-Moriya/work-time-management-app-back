@@ -32,7 +32,14 @@ class WorkLogServiceImpl(val workLogRepository: WorkLogRepository): WorkLogServi
                 insert(INSERT_HYPHEN_POSITION1, "-")
                 insert(INSERT_HYPHEN_POSITION2, "-")
             }.toString()
-        return workLogRepository.findByBetweenYearAndMonth(userId, modifiedFromDate, modifiedToDate)
+        val workLogList = workLogRepository.findByBetweenYearAndMonth(userId, modifiedFromDate, modifiedToDate)
+        return workLogList.map { workLog ->
+                    if (workLog.workLogEndTime.substring(workLog.workLogEndTime.length - 8) == TIME_ZERO_HHMMSS)  {
+                        WorkLog(workLog.workLogId, workLog.workLogUserId, workLog.workLogDate, workLog.workLogStartTime, "${workLog.workLogDate} 24:00:00", workLog.workLogSeconds)
+                    } else {
+                        workLog
+                    }
+                }
     }
 
     override fun save(workLog: WorkLog): List<WorkLog> {
