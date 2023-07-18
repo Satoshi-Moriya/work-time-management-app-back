@@ -79,24 +79,56 @@ class WorkLogControllerTest {
     }
 
     @Test
-    fun `POST「work-log」が呼ばれたときにsave()が実行されて、登録データが返ってくる`() {
+    fun `POST「work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
         val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(testWorkLog)
 
-        val expectedWorkLog = WorkLog(1,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701)
+        val expectedWorkLog = listOf(WorkLog(1,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701))
         `when`(mockWorkLogService.save(testWorkLog))
             .thenReturn(expectedWorkLog)
 
         mockMvc.perform(post("/work-log")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-            .andExpect(jsonPath("workLogId").value(1))
-            .andExpect(jsonPath("workLogUserId").value(1))
-            .andExpect(jsonPath("workLogDate").value("2023-07-03"))
-            .andExpect(jsonPath("workLogStartTime").value("2023-07-03 9:00:59"))
-            .andExpect(jsonPath("workLogEndTime").value("2023-07-03 12:00:00"))
-            .andExpect(jsonPath("workLogSeconds").value(10701))
+            .andExpect(jsonPath("$[0].workLogId").value(1))
+            .andExpect(jsonPath("$[0].workLogUserId").value(1))
+            .andExpect(jsonPath("$[0].workLogDate").value("2023-07-03"))
+            .andExpect(jsonPath("$[0].workLogStartTime").value("2023-07-03 9:00:59"))
+            .andExpect(jsonPath("$[0].workLogEndTime").value("2023-07-03 12:00:00"))
+            .andExpect(jsonPath("$[0].workLogSeconds").value(10701))
+
+        verify(mockWorkLogService, times(1)).save(testWorkLog)
+    }
+
+    @Test
+    fun `2日間にわたるPOST「work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
+        val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 23:30:00", "2023-07-04 01:00:00", 5400)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        val expectedWorkLog = listOf(
+            WorkLog(1,1, "2023-07-03", "2023-07-03 23:30:00", "2023-07-03 24:00:00", 1800),
+            WorkLog(2,1, "2023-07-04", "2023-07-04 00:00:00", "2023-07-04 01:00:00", 3600),
+        )
+        `when`(mockWorkLogService.save(testWorkLog))
+            .thenReturn(expectedWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(jsonPath("$[0].workLogId").value(1))
+            .andExpect(jsonPath("$[0].workLogUserId").value(1))
+            .andExpect(jsonPath("$[0].workLogDate").value("2023-07-03"))
+            .andExpect(jsonPath("$[0].workLogStartTime").value("2023-07-03 23:30:00"))
+            .andExpect(jsonPath("$[0].workLogEndTime").value("2023-07-03 24:00:00"))
+            .andExpect(jsonPath("$[0].workLogSeconds").value(1800))
+            .andExpect(jsonPath("$[1].workLogId").value(2))
+            .andExpect(jsonPath("$[1].workLogUserId").value(1))
+            .andExpect(jsonPath("$[1].workLogDate").value("2023-07-04"))
+            .andExpect(jsonPath("$[1].workLogStartTime").value("2023-07-04 00:00:00"))
+            .andExpect(jsonPath("$[1].workLogEndTime").value("2023-07-04 01:00:00"))
+            .andExpect(jsonPath("$[1].workLogSeconds").value(3600))
 
         verify(mockWorkLogService, times(1)).save(testWorkLog)
     }
