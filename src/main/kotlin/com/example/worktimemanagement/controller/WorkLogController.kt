@@ -22,8 +22,7 @@ class WorkLogController(val workLogService: WorkLogService) {
     // --data-raw '{"workLogUserId" : "1", "workLogDate" : "2023-07-03", "workLogStartTime" : "2023-07-03 9:00:59", "workLogEndTime" : "2023-07-03 12:00:00", "workLogSeconds" : "10741"}' | jq
     @PostMapping("/work-log")
     @ResponseStatus(HttpStatus.CREATED)
-    fun save(@RequestBody workLogBody: WorkLog): WorkLog {
-        println(workLogBody)
+    fun save(@RequestBody workLogBody: WorkLog): List<WorkLog> {
         return workLogService.save(workLogBody)
     }
 }
