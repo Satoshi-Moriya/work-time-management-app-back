@@ -2,26 +2,61 @@ package com.example.worktimemanagement.service
 
 import com.example.worktimemanagement.entity.WorkLog
 import com.example.worktimemanagement.repository.WorkLogRepository
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.junit.jupiter.api.Assertions.*
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito.*
+import org.mockito.junit.jupiter.MockitoExtension
 
-
-@SpringBootTest
+@ExtendWith(MockitoExtension::class)
 class WorkLogServiceTest {
 
-    @Autowired
-    private lateinit var workLogService: WorkLogService
-
-    @MockBean
+    @Mock
     private lateinit var mockWorkLogRepository: WorkLogRepository
 
+    @InjectMocks
+    private lateinit var workLogService: WorkLogServiceImpl
+
     @Test
-    fun `save()が実行されると、workRepositoryのsaveAll()が実行されている`() {
+    fun `findByBetweenYearAndMonth()が実行されると、workRepositoryのfindByBetweenYearAndMonthが実行される`() {
+        workLogService.findByBetweenYearAndMonth(1, "20230601", "20230630")
+        verify(mockWorkLogRepository, times(1)).findByBetweenYearAndMonth(1, "2023-06-01", "2023-06-30")
+    }
+
+    @Test
+    fun `取得してきたWorkLogのList内のworkLogEndTimeに「yyyy-mm-dd 00 00 00」がある場合、「yyyy-mm-dd 24 00 00」に変換される`() {
+        `when`(mockWorkLogRepository.findByBetweenYearAndMonth(1, "2023-06-01", "2023-06-30"))
+            .thenReturn(listOf(
+                WorkLog(1,1, "2023-06-03", "2023-06-03 23:30:00", "2023-06-04 00:00:00", 1800),
+                WorkLog(2,1, "2023-06-04", "2023-06-04 00:00:00", "2023-06-04 01:00:00", 3600)
+            ))
+
+        val expectWorkLogList = listOf(
+            WorkLog(1,1, "2023-06-03", "2023-06-03 23:30:00", "2023-06-03 24:00:00", 1800),
+            WorkLog(2,1, "2023-06-04", "2023-06-04 00:00:00", "2023-06-04 01:00:00", 3600)
+        )
+        assertEquals(expectWorkLogList, workLogService.findByBetweenYearAndMonth(1, "20230601", "20230630"))
+    }
+
+    @Test
+    fun `取得してきたWorkLogのList内のworkLogEndTimeに「yyyy-mm-dd 00 00 00」がない場合、そのままである`() {
+        `when`(mockWorkLogRepository.findByBetweenYearAndMonth(1, "2023-06-01", "2023-06-30"))
+            .thenReturn(listOf(
+                WorkLog(1,1, "2023-06-03", "2023-06-03 23:30:00", "2023-06-03 23:59:59", 1799),
+                WorkLog(2,1, "2023-06-04", "2023-06-04 00:00:00", "2023-06-04 01:00:00", 3600)
+            ))
+
+        val expectWorkLogList = listOf(
+            WorkLog(1,1, "2023-06-03", "2023-06-03 23:30:00", "2023-06-03 23:59:59", 1799),
+            WorkLog(2,1, "2023-06-04", "2023-06-04 00:00:00", "2023-06-04 01:00:00", 3600)
+        )
+        assertEquals(expectWorkLogList, workLogService.findByBetweenYearAndMonth(1, "20230601", "20230630"))
+    }
+
+    @Test
+    fun `save()が実行されると、workRepositoryのsaveAll()が実行される`() {
         val workLog = WorkLog(0,1, "2023-06-01", "2023-06-01 13:00:00", "2023-06-01 18:00:00", 18000)
         val workLogList = arrayListOf(workLog)
         workLogService.save(workLog)
