@@ -12,8 +12,8 @@ data class User (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val userId: Int,
 
-    @Column(name = "user_mail_address")
-    val userMainAddress: String,
+    @Column(name = "user_email")
+    val userEmail: String,
 
     @Column(name = "user_password")
     @JsonIgnore
