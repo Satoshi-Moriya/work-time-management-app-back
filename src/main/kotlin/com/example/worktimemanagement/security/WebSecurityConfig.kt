@@ -7,13 +7,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
-
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig {
+class WebSecurityConfig(val userDetailsService: UserDetailsService) {
 
     @Throws(Exception::class)
     @Bean
@@ -23,21 +23,15 @@ class WebSecurityConfig {
             .cors {  }
             .authorizeHttpRequests {
                 authorize -> authorize
-                    .requestMatchers("/login", "signup").permitAll()
+                    .requestMatchers("/login", "/auth/signup").permitAll()
                     .anyRequest().authenticated()
-//            .usernameParameter("userEmail")
-//            .passwordParameter("password")
             }
-            .logout{
-                logout -> logout
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/login")
-            }
+            .logout{}
             .csrf {
                 csrf -> csrf.disable()
             }
-            .addFilter(AuthenticationFilter(authenticationManager))
-//            .addFilter(AuthorizationFilter(authenticationManager))
+            .addFilter(MyAuthenticationFilter(authenticationManager, bCryptPasswordEncoder()))
+            .addFilter(MyAuthorizationFilter(authenticationManager))
             .sessionManagement{session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             };

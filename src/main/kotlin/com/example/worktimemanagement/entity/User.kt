@@ -16,7 +16,6 @@ data class User (
     val userEmail: String,
 
     @Column(name = "user_password")
-    @JsonIgnore
     val userPassword: String,
 
     @Column(name = "created_at")

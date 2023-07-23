@@ -17,7 +17,7 @@ class UserController(val userService: UserService) {
     // テストリクエスト
     // curl --location --request POST 'http://localhost:8080/auth/signup' \
     // --header 'Content-Type: application/json' \
-    // --data-raw '{"userMainAddress" : "ユニークなメールアドレスを設定", "userPassword" : "test5678", "createdAt" : "2023-07-03 12:00:00", "updatedAt" : null, "deletedAt" : null}' | jq
+    // --data-raw '{"userEmail" : "ユニークなメールアドレスを設定", "userPassword" : "test5678", "createdAt" : "2023-07-03 12:00:00", "updatedAt" : null, "deletedAt" : null}' | jq
     @PostMapping("/auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun register(@RequestBody userBody: User): User {
