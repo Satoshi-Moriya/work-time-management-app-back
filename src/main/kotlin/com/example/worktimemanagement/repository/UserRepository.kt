@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 
 interface UserRepository : CrudRepository<User, Int> {
-    @Query("SELECT u FROM User u WHERE u.userEmail = :email")
+    @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")
     fun findByUserEmail(email: String): User
 }
