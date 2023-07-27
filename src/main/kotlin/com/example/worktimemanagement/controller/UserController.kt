@@ -3,12 +3,10 @@ package com.example.worktimemanagement.controller
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.service.UserService
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.*
+
 
 @RestController
 @CrossOrigin
@@ -23,4 +21,18 @@ class UserController(val userService: UserService) {
     fun register(@RequestBody userBody: User): User {
         return userService.save(userBody)
     }
+
+    @GetMapping("/auth/user")
+    fun getAuthUser(): AuthUserResponse {
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+
+        val username = authentication.name
+        return userService.findByUserEmail(username)
+    }
 }
+
+data class AuthUserResponse (
+    val success: Boolean,
+    val message: String,
+    val authUserId: Int?
+)
