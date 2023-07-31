@@ -7,18 +7,22 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpCookie
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import java.io.IOException
 import java.util.*
+
 
 class MyAuthenticationFilter(
     private var authenticationManager: AuthenticationManager,
@@ -67,7 +71,16 @@ class MyAuthenticationFilter(
             .signWith(key)
             .compact()
 
+        val user = auth.principal as MyUserDetails
+        res.writer.write(ObjectMapper().writeValueAsString(user.user.copy(userPassword = "")))
+
         res.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
+        val cookie = Cookie("token", token)
+            cookie.path = "/"
+            cookie.isHttpOnly = true
+//        ToDo httpsの通信のみ有効にするっぽいので本番では適応させる
+//          cookie.secure = true
+        res.addCookie(cookie)
     }
 }
 

@@ -19,6 +19,6 @@ class MyUserDetailsService(private val userRepository: UserRepository): UserDeta
             throw UsernameNotFoundException("ユーザーが見つかりませんでした: $email")
         }
 
-        return MyUserDetails(userRepository.findByUserEmail(email))
+        return MyUserDetails(userRepository.findByUserEmail(email).orElse(null))
     }
 }
