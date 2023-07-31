@@ -5,7 +5,6 @@ import io.jsonwebtoken.security.Keys
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -18,9 +17,9 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
         private val key by lazy { Keys.hmacShaKeyFor(secretKey.toByteArray()) }
     }
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-        val token = request.getHeader(HttpHeaders.AUTHORIZATION)
+        val token =  request.cookies.find { it.name == "token" }?.value
 
-        if (token == null || !token.startsWith("Bearer ")) {
+        if (token == null) {
             chain.doFilter(request, response)
             return
         }
@@ -32,12 +31,12 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
     }
 
     private fun getAuthentication(request: HttpServletRequest): UsernamePasswordAuthenticationToken? {
-        val token = request.getHeader((HttpHeaders.AUTHORIZATION))
+        val token = request.cookies.find { it.name == "token" }?.value
         if (token != null) {
             val user: String = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token.replace("Bearer ", ""))
+                .parseClaimsJws(token)
                 .body
                 .subject
 
