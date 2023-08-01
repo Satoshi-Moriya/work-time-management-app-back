@@ -1,5 +1,6 @@
 package com.example.worktimemanagement.security
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -11,6 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -19,6 +22,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(val userDetailsService: UserDetailsService) {
+
+    @Autowired
+    private lateinit var myLogoutSuccessHandler: MyLogoutSuccessHandler
 
     @Throws(Exception::class)
     @Bean
@@ -31,7 +37,6 @@ class WebSecurityConfig(val userDetailsService: UserDetailsService) {
                     .requestMatchers("/login", "/auth/signup").permitAll()
                     .anyRequest().authenticated()
             }
-            .logout{}
             .csrf {
                 csrf -> csrf.disable()
             }
@@ -39,7 +44,12 @@ class WebSecurityConfig(val userDetailsService: UserDetailsService) {
             .addFilter(MyAuthorizationFilter(authenticationManager))
             .sessionManagement{session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            };
+            }
+            .logout {
+                    logout -> logout
+                        .deleteCookies("token")
+                        .logoutSuccessHandler(myLogoutSuccessHandler)
+            }
 
         return http.build()
     }
