@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -59,5 +60,13 @@ class UserControllerTest {
             .andExpect(jsonPath("$.authUserId").value(1))
 
         verify(mockUserService, times(1)).findByUserEmail(mockEmail)
+    }
+
+    @Test
+    fun `DELETE「／user／userId」が呼ばれたとき、userServiceのdeleteByUserId()が呼ばれる`() {
+
+        mockMvc.perform(delete("/user/1"))
+
+        verify(mockUserService, times(1)).deleteByUserId(1)
     }
 }

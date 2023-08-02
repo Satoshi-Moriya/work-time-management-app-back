@@ -3,13 +3,15 @@ package com.example.worktimemanagement.service
 import com.example.worktimemanagement.controller.AuthUserResponse
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
-import com.example.worktimemanagement.security.MyUserDetails
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 interface UserService {
 
     fun save(user: User): User
     fun findByUserEmail(username: String): AuthUserResponse
+    fun deleteByUserId(userId: Int)
 }
 
 @Service
@@ -34,5 +36,16 @@ class UserServiceImpl(val userRepository: UserRepository): UserService {
                     message = "認証されたユーザーではありません。",
                     authUserId = null
             ))
+    }
+
+    override fun deleteByUserId(userId: Int) {
+        val deletedAt = getCurrentDateTimeAsString()
+        userRepository.deleteByUserId(userId, deletedAt)
+    }
+
+    private fun getCurrentDateTimeAsString(): String {
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        return currentDateTime.format(formatter)
     }
 }
