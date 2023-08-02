@@ -3,7 +3,6 @@ package com.example.worktimemanagement.service
 import com.example.worktimemanagement.controller.AuthUserResponse
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -42,5 +41,12 @@ class UserServiceTest {
         assertEquals(expectAuthUserResponse, userService.findByUserEmail("test@example.com"))
 
         verify(mockUserRepository, times(1)).findByUserEmail("test@example.com")
+    }
+
+    @Test
+    fun `deleteByUserId()が実行されると、userRepositoryのdeleteByUserId()が実行される`() {
+        userService.deleteByUserId(1)
+
+        verify(mockUserRepository, times(1)).deleteByUserId(eq(1), anyString())
     }
 }

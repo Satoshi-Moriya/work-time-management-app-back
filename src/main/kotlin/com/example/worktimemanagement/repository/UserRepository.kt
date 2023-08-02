@@ -8,4 +8,7 @@ import java.util.Optional
 interface UserRepository : CrudRepository<User, Int> {
     @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")
     fun findByUserEmail(email: String): Optional<User>
+
+    @Query("UPDATE User u SET u.deletedAt = :deletedAt WHERE u.userId = :userId")
+    fun deleteByUserId(userId: Int, deletedAt: String)
 }

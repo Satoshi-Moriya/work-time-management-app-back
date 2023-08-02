@@ -29,6 +29,13 @@ class UserController(val userService: UserService) {
         val username = authentication.name
         return userService.findByUserEmail(username)
     }
+
+    @DeleteMapping("/user/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteUser(@PathVariable userId: Int) {
+        userService.deleteByUserId(userId)
+    }
+
 }
 
 data class AuthUserResponse (
