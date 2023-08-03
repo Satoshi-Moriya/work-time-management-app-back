@@ -7,13 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.http.MediaType
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.*
@@ -48,16 +48,17 @@ class UserControllerTest {
 
     @Test
     @WithMockUser(username = "test@example.com")
-    fun `GET「／auth／user」が呼ばれたとき、userServiceのfindByUserEmail()が呼ばれ、指定したuserのuserIdが返ってくる`() {
+    fun `GET「／auth／user」が呼ばれたとき、userServiceのfindByUserEmail()が呼ばれ、指定したuserのuserIdとuserEmailが返ってくる`() {
         val mockEmail = "test@example.com"
 
         `when`(mockUserService.findByUserEmail(mockEmail))
-            .thenReturn(AuthUserResponse(true, "認証されたユーザーです。", 1))
+            .thenReturn(AuthUserResponse(true, "認証されたユーザーです。", 1, "test@example.com"))
 
         mockMvc.perform(get("/auth/user"))
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.message").value("認証されたユーザーです。"))
             .andExpect(jsonPath("$.authUserId").value(1))
+            .andExpect(jsonPath("$.authUserEmail").value("test@example.com"))
 
         verify(mockUserService, times(1)).findByUserEmail(mockEmail)
     }
@@ -68,5 +69,34 @@ class UserControllerTest {
         mockMvc.perform(delete("/user/1"))
 
         verify(mockUserService, times(1)).deleteByUserId(1)
+    }
+
+    @Test
+    fun `PUT「／users／userId／email」が呼ばれたとき、ステータス200が返ってくる`() {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockIncludeNewEmailRequest)
+
+        mockMvc.perform(put("/users/1/email")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `PUT「／users／userId／email」が呼ばれたとき、userServiceのupdateUserEmail()が呼ばれる` () {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockIncludeNewEmailRequest)
+
+        `when`(mockUserService.updateUserEmail(mockIncludeNewEmailRequest))
+            .thenReturn(UpdateUserEmailResponse("メールアドレスが更新されました。"))
+
+        mockMvc.perform(put("/users/1/email")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(jsonPath("$.message").value("メールアドレスが更新されました。"))
+
+        verify(mockUserService, times(1)).updateUserEmail(mockIncludeNewEmailRequest)
     }
 }
