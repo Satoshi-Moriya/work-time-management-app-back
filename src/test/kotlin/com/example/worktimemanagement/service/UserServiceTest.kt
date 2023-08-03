@@ -2,6 +2,7 @@ package com.example.worktimemanagement.service
 
 import com.example.worktimemanagement.controller.AuthUserResponse
 import com.example.worktimemanagement.controller.IncludeNewEmailRequest
+import com.example.worktimemanagement.controller.UpdateUserEmailResponse
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -27,22 +28,22 @@ class UserServiceTest {
     private lateinit var userService: UserServiceImpl
 
     @Test
-    fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つかった場合、「true」と「認証されたユーザーです。」userIdとが返る`() {
+    fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つかった場合、「true」と「認証されたユーザーです。」とuserIdとuserEmailが返る`() {
         `when`(mockUserRepository.findByUserEmail("test@example.com"))
             .thenReturn(Optional.of(User(1, "test@example.com", "password1234", "2023-07-01 09:00:00", null, null)))
 
-        val expectAuthUserResponse = AuthUserResponse(true, "認証されたユーザーです。", 1 )
+        val expectAuthUserResponse = AuthUserResponse(true, "認証されたユーザーです。", 1, "test@example.com")
         assertEquals(expectAuthUserResponse, userService.findByUserEmail("test@example.com"))
 
         verify(mockUserRepository, times(1)).findByUserEmail("test@example.com")
     }
 
     @Test
-    fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つからなかった場合、0が返る`() {
+    fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つからなかった場合、「false」と「認証されたユーザーではありません。」nullが返る`() {
         `when`(mockUserRepository.findByUserEmail("test@example.com"))
             .thenReturn(Optional.empty())
 
-        val expectAuthUserResponse = AuthUserResponse(false, "認証されたユーザーではありません。", null)
+        val expectAuthUserResponse = AuthUserResponse(false, "認証されたユーザーではありません。", null, null)
         assertEquals(expectAuthUserResponse, userService.findByUserEmail("test@example.com"))
 
         verify(mockUserRepository, times(1)).findByUserEmail("test@example.com")
@@ -56,13 +57,36 @@ class UserServiceTest {
     }
 
     @Test
-    fun `updateUserEmail()が実行されると、userRepositoryのupdateUserEmail()が実行される` () {
+    fun `updateUserEmail()が実行され、現在のパスワードと入力されたパスワードが一致した時、userRepositoryのupdateUserEmail()が実行され、trueと「メールアドレスが更新されました。」が返る` () {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
 
-        `when`(bCryptPasswordEncoder.encode("mockPass1234")).thenReturn("encodedMockPass1234")
+        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(bCryptPasswordEncoder.matches("mockPass1234", "encodedMockPass1234")).thenReturn(true)
 
-        userService.updateUserEmail(mockIncludeNewEmailRequest)
+        val expectUpdateUserEmailResponse = UpdateUserEmailResponse("メールアドレスが更新されました。")
+        assertEquals(expectUpdateUserEmailResponse, userService.updateUserEmail(mockIncludeNewEmailRequest))
 
-        verify(mockUserRepository, times(1)).updateUserEmail(1,"mockEmail@test.com", "encodedMockPass1234")
+        verify(mockUserRepository, times(1)).updateUserEmail(1,"mockEmail@test.com")
+    }
+
+    @Test
+    fun `updateUserEmail()が実行され、現在のパスワードと入力されたパスワードが一致しなかった時、falseと「パスワードが間違っており、メールアドレスの更新ができませんでした。」が返る` () {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1235")
+
+        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(bCryptPasswordEncoder.matches("mockPass1235", "encodedMockPass1234")).thenReturn(false)
+
+        val expectUpdateUserEmailResponse = UpdateUserEmailResponse("パスワードが間違っており、メールアドレスの更新ができませんでした。")
+        assertEquals(expectUpdateUserEmailResponse, userService.updateUserEmail(mockIncludeNewEmailRequest))
+    }
+
+    @Test
+    fun `updateUserEmail()が実行され、現在のパスワードが見つからない時、falseと「予期せぬ問題が起こり、メールアドレスの更新ができませんでした。」が返る` () {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
+
+        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn(null)
+
+        val expectUpdateUserEmailResponse = UpdateUserEmailResponse("予期せぬ問題が起こり、メールアドレスの更新ができませんでした。")
+        assertEquals(expectUpdateUserEmailResponse, userService.updateUserEmail(mockIncludeNewEmailRequest))
     }
 }

@@ -1,6 +1,5 @@
 package com.example.worktimemanagement.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
@@ -12,7 +11,7 @@ data class User (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val userId: Int,
 
-    @Column(name = "user_email")
+    @Column(name = "user_email", unique = true)
     val userEmail: String,
 
     @Column(name = "user_password")

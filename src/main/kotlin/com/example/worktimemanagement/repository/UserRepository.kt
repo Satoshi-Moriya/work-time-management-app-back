@@ -11,6 +11,7 @@ import java.util.Optional
 @Transactional
 @Repository
 interface UserRepository : CrudRepository<User, Int> {
+
     @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")
     fun findByUserEmail(email: String): Optional<User>
 
@@ -18,7 +19,10 @@ interface UserRepository : CrudRepository<User, Int> {
     @Query("UPDATE User u SET u.deletedAt = :deletedAt WHERE u.userId = :userId")
     fun deleteByUserId(userId: Int, deletedAt: String)
 
+    @Query("SELECT u.userPassword FROM User u WHERE u.userId = :userId")
+    fun getCurrentPassword(userId: Int): String?
+
     @Modifying
-    @Query("UPDATE User u SET u.userEmail = :userEmail WHERE u.userId = :userId AND u.userPassword = :password")
-    fun updateUserEmail(userId: Int, userEmail: String, password: String)
+    @Query("UPDATE User u SET u.userEmail = :userEmail WHERE u.userId = :userId")
+    fun updateUserEmail(userId: Int, userEmail: String)
 }

@@ -48,16 +48,17 @@ class UserControllerTest {
 
     @Test
     @WithMockUser(username = "test@example.com")
-    fun `GET「／auth／user」が呼ばれたとき、userServiceのfindByUserEmail()が呼ばれ、指定したuserのuserIdが返ってくる`() {
+    fun `GET「／auth／user」が呼ばれたとき、userServiceのfindByUserEmail()が呼ばれ、指定したuserのuserIdとuserEmailが返ってくる`() {
         val mockEmail = "test@example.com"
 
         `when`(mockUserService.findByUserEmail(mockEmail))
-            .thenReturn(AuthUserResponse(true, "認証されたユーザーです。", 1))
+            .thenReturn(AuthUserResponse(true, "認証されたユーザーです。", 1, "test@example.com"))
 
         mockMvc.perform(get("/auth/user"))
             .andExpect(jsonPath("$.success").value(true))
             .andExpect(jsonPath("$.message").value("認証されたユーザーです。"))
             .andExpect(jsonPath("$.authUserId").value(1))
+            .andExpect(jsonPath("$.authUserEmail").value("test@example.com"))
 
         verify(mockUserService, times(1)).findByUserEmail(mockEmail)
     }
@@ -71,15 +72,30 @@ class UserControllerTest {
     }
 
     @Test
-    fun `PATCH「／users／userId／email」が呼ばれたとき、userServiceのupdateUserEmail()が呼ばれる` () {
+    fun `PUT「／users／userId／email」が呼ばれたとき、ステータス200が返ってくる`() {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(mockIncludeNewEmailRequest)
 
-        mockMvc.perform(patch("/users/1/email")
+        mockMvc.perform(put("/users/1/email")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-            .andExpect(status().isNoContent)
+            .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `PUT「／users／userId／email」が呼ばれたとき、userServiceのupdateUserEmail()が呼ばれる` () {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockIncludeNewEmailRequest)
+
+        `when`(mockUserService.updateUserEmail(mockIncludeNewEmailRequest))
+            .thenReturn(UpdateUserEmailResponse("メールアドレスが更新されました。"))
+
+        mockMvc.perform(put("/users/1/email")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(jsonPath("$.message").value("メールアドレスが更新されました。"))
 
         verify(mockUserService, times(1)).updateUserEmail(mockIncludeNewEmailRequest)
     }
