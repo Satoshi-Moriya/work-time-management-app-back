@@ -1,6 +1,7 @@
 package com.example.worktimemanagement.service
 
 import com.example.worktimemanagement.controller.AuthUserResponse
+import com.example.worktimemanagement.controller.IncludeNewEmailRequest
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
@@ -17,6 +19,9 @@ class UserServiceTest {
 
     @Mock
     private lateinit var mockUserRepository: UserRepository
+
+    @Mock
+    private lateinit var bCryptPasswordEncoder: BCryptPasswordEncoder
 
     @InjectMocks
     private lateinit var userService: UserServiceImpl
@@ -48,5 +53,16 @@ class UserServiceTest {
         userService.deleteByUserId(1)
 
         verify(mockUserRepository, times(1)).deleteByUserId(eq(1), anyString())
+    }
+
+    @Test
+    fun `updateUserEmail()が実行されると、userRepositoryのupdateUserEmail()が実行される` () {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
+
+        `when`(bCryptPasswordEncoder.encode("mockPass1234")).thenReturn("encodedMockPass1234")
+
+        userService.updateUserEmail(mockIncludeNewEmailRequest)
+
+        verify(mockUserRepository, times(1)).updateUserEmail(1,"mockEmail@test.com", "encodedMockPass1234")
     }
 }

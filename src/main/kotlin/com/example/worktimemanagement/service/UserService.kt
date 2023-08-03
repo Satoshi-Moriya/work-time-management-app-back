@@ -1,8 +1,10 @@
 package com.example.worktimemanagement.service
 
 import com.example.worktimemanagement.controller.AuthUserResponse
+import com.example.worktimemanagement.controller.IncludeNewEmailRequest
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -10,12 +12,19 @@ import java.time.format.DateTimeFormatter
 interface UserService {
 
     fun save(user: User): User
+
     fun findByUserEmail(username: String): AuthUserResponse
+
     fun deleteByUserId(userId: Int)
+
+    fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest)
 }
 
 @Service
-class UserServiceImpl(val userRepository: UserRepository): UserService {
+class UserServiceImpl(
+    val userRepository: UserRepository,
+    val bCryptPasswordEncoder: BCryptPasswordEncoder
+): UserService {
 
     override fun save(user: User): User {
         return userRepository.save(user)
@@ -41,6 +50,14 @@ class UserServiceImpl(val userRepository: UserRepository): UserService {
     override fun deleteByUserId(userId: Int) {
         val deletedAt = getCurrentDateTimeAsString()
         userRepository.deleteByUserId(userId, deletedAt)
+    }
+
+    override fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest) {
+        userRepository.updateUserEmail(
+            includeNewEmailRequest.userId,
+            includeNewEmailRequest.email,
+            bCryptPasswordEncoder.encode(includeNewEmailRequest.password)
+        )
     }
 
     private fun getCurrentDateTimeAsString(): String {

@@ -36,10 +36,22 @@ class UserController(val userService: UserService) {
         userService.deleteByUserId(userId)
     }
 
+    @PatchMapping("/users/{userId}/email")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateUserEmail(@RequestBody request: IncludeNewEmailRequest) {
+        userService.updateUserEmail(request)
+    }
+
 }
 
 data class AuthUserResponse (
     val success: Boolean,
     val message: String,
     val authUserId: Int?
+)
+
+data class IncludeNewEmailRequest (
+    val userId: Int,
+    val email: String,
+    val password: String
 )

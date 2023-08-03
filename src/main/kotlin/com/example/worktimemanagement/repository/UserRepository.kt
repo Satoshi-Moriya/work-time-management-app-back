@@ -17,4 +17,8 @@ interface UserRepository : CrudRepository<User, Int> {
     @Modifying
     @Query("UPDATE User u SET u.deletedAt = :deletedAt WHERE u.userId = :userId")
     fun deleteByUserId(userId: Int, deletedAt: String)
+
+    @Modifying
+    @Query("UPDATE User u SET u.userEmail = :userEmail WHERE u.userId = :userId AND u.userPassword = :password")
+    fun updateUserEmail(userId: Int, userEmail: String, password: String)
 }

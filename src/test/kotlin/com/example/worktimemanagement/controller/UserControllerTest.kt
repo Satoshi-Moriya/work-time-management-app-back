@@ -7,13 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.http.MediaType
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.*
@@ -68,5 +68,19 @@ class UserControllerTest {
         mockMvc.perform(delete("/user/1"))
 
         verify(mockUserService, times(1)).deleteByUserId(1)
+    }
+
+    @Test
+    fun `PATCH「／users／userId／email」が呼ばれたとき、userServiceのupdateUserEmail()が呼ばれる` () {
+        val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockIncludeNewEmailRequest)
+
+        mockMvc.perform(patch("/users/1/email")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isNoContent)
+
+        verify(mockUserService, times(1)).updateUserEmail(mockIncludeNewEmailRequest)
     }
 }
