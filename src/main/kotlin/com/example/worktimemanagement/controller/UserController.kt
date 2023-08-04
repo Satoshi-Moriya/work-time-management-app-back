@@ -42,6 +42,11 @@ class UserController(val userService: UserService) {
         return userService.updateUserEmail(request)
     }
 
+    @PutMapping("/users/{userId}/password")
+    @ResponseStatus(HttpStatus.OK)
+    fun updateUserPassword(@RequestBody request: UpdateUserPasswordRequest): UpdateUserPasswordResponse {
+        return userService.updateUserPassword(request)
+    }
 }
 
 data class AuthUserResponse (
@@ -58,5 +63,15 @@ data class IncludeNewEmailRequest (
 )
 
 data class UpdateUserEmailResponse (
+    val message: String
+)
+
+data class UpdateUserPasswordRequest (
+    val userId: Int,
+    val currentPassword: String,
+    val newPassword: String
+)
+
+data class UpdateUserPasswordResponse (
     val message: String
 )

@@ -1,8 +1,6 @@
 package com.example.worktimemanagement.service
 
-import com.example.worktimemanagement.controller.AuthUserResponse
-import com.example.worktimemanagement.controller.IncludeNewEmailRequest
-import com.example.worktimemanagement.controller.UpdateUserEmailResponse
+import com.example.worktimemanagement.controller.*
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -88,5 +86,40 @@ class UserServiceTest {
 
         val expectUpdateUserEmailResponse = UpdateUserEmailResponse("予期せぬ問題が起こり、メールアドレスの更新ができませんでした。")
         assertEquals(expectUpdateUserEmailResponse, userService.updateUserEmail(mockIncludeNewEmailRequest))
+    }
+
+    @Test
+    fun `updateUserPassword()が実行され、現在のパスワードと入力されたパスワードが一致した時、userRepositoryのupdateUserPassword()が実行され、「パスワードが更新されました。」が返る` () {
+        val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")
+
+        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(bCryptPasswordEncoder.matches("mockCurrentPass1234", "encodedMockPass1234")).thenReturn(true)
+        `when`(bCryptPasswordEncoder.encode("mockNewPass1234")).thenReturn("mockEncodeNewPass1234")
+
+        val expectUpdateUserPasswordResponse = UpdateUserPasswordResponse("パスワードが更新されました。")
+        assertEquals(expectUpdateUserPasswordResponse, userService.updateUserPassword(mockUpdateUserPasswordRequest))
+
+        verify(mockUserRepository, times(1)).updateUserPassword(1,"mockEncodeNewPass1234")
+    }
+
+    @Test
+    fun `updateUserPassword()が実行され、現在のパスワードと入力されたパスワードが一致しなかった時、「現在のパスワードが間違っており、パスワードの更新ができませんでした。」が返る` () {
+        val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1235", "mockNewPass1234")
+
+        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(bCryptPasswordEncoder.matches("mockCurrentPass1235", "encodedMockPass1234")).thenReturn(false)
+
+        val expectUpdateUserPasswordResponse = UpdateUserPasswordResponse("現在のパスワードが間違っており、パスワードの更新ができませんでした。")
+        assertEquals(expectUpdateUserPasswordResponse, userService.updateUserPassword(mockUpdateUserPasswordRequest))
+    }
+
+    @Test
+    fun `updateUserPassword()が実行され、現在のパスワードが見つからない時、「予期せぬ問題が起こり、パスワードの更新ができませんでした。」が返る` () {
+        val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")
+
+        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn(null)
+
+        val expectUpdateUserPasswordResponse = UpdateUserPasswordResponse("予期せぬ問題が起こり、パスワードの更新ができませんでした。")
+        assertEquals(expectUpdateUserPasswordResponse, userService.updateUserPassword(mockUpdateUserPasswordRequest))
     }
 }
