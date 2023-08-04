@@ -99,4 +99,33 @@ class UserControllerTest {
 
         verify(mockUserService, times(1)).updateUserEmail(mockIncludeNewEmailRequest)
     }
+
+    @Test
+    fun `PUT「／users／userId／password」が呼ばれたとき、ステータス200が返ってくる`() {
+        val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUpdateUserPasswordRequest)
+
+        mockMvc.perform(put("/users/1/password")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `PUT「／users／userId／password」が呼ばれたとき、userServiceのupdateUserPassword()が呼ばれる` () {
+        val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUpdateUserPasswordRequest)
+
+        `when`(mockUserService.updateUserPassword(mockUpdateUserPasswordRequest))
+            .thenReturn(UpdateUserPasswordResponse("パスワードが更新されました。"))
+
+        mockMvc.perform(put("/users/1/password")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(jsonPath("$.message").value("パスワードが更新されました。"))
+
+        verify(mockUserService, times(1)).updateUserPassword(mockUpdateUserPasswordRequest)
+    }
 }

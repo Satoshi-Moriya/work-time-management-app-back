@@ -1,8 +1,6 @@
 package com.example.worktimemanagement.service
 
-import com.example.worktimemanagement.controller.AuthUserResponse
-import com.example.worktimemanagement.controller.IncludeNewEmailRequest
-import com.example.worktimemanagement.controller.UpdateUserEmailResponse
+import com.example.worktimemanagement.controller.*
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.repository.UserRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -19,6 +17,8 @@ interface UserService {
     fun deleteByUserId(userId: Int)
 
     fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest): UpdateUserEmailResponse
+    
+    fun updateUserPassword(request: UpdateUserPasswordRequest): UpdateUserPasswordResponse
 }
 
 @Service
@@ -69,6 +69,23 @@ class UserServiceImpl(
                 }
             } ?: (
                 UpdateUserEmailResponse("予期せぬ問題が起こり、メールアドレスの更新ができませんでした。")
+            )
+    }
+
+    override fun updateUserPassword(updateUserPasswordRequest: UpdateUserPasswordRequest): UpdateUserPasswordResponse {
+        return userRepository.getCurrentPassword(updateUserPasswordRequest.userId)
+            ?.let { userCurrentPassword ->
+                if (bCryptPasswordEncoder.matches(updateUserPasswordRequest.currentPassword, userCurrentPassword)) {
+                    userRepository.updateUserPassword(
+                        updateUserPasswordRequest.userId,
+                        bCryptPasswordEncoder.encode(updateUserPasswordRequest.newPassword)
+                    )
+                    UpdateUserPasswordResponse("パスワードが更新されました。")
+                } else {
+                    UpdateUserPasswordResponse("現在のパスワードが間違っており、パスワードの更新ができませんでした。")
+                }
+            } ?: (
+                UpdateUserPasswordResponse("予期せぬ問題が起こり、パスワードの更新ができませんでした。")
             )
     }
 
