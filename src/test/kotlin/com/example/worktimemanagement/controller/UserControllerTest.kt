@@ -1,5 +1,6 @@
 package com.example.worktimemanagement.controller
 
+import com.example.worktimemanagement.dto.CustomResponse
 import com.example.worktimemanagement.service.UserService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -89,9 +90,6 @@ class UserControllerTest {
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(mockIncludeNewEmailRequest)
 
-        `when`(mockUserService.updateUserEmail(mockIncludeNewEmailRequest))
-            .thenReturn(UpdateUserEmailResponse("メールアドレスが更新されました。"))
-
         mockMvc.perform(put("/users/1/email")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
@@ -117,9 +115,6 @@ class UserControllerTest {
         val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(mockUpdateUserPasswordRequest)
-
-        `when`(mockUserService.updateUserPassword(mockUpdateUserPasswordRequest))
-            .thenReturn(UpdateUserPasswordResponse("パスワードが更新されました。"))
 
         mockMvc.perform(put("/users/1/password")
             .contentType(MediaType.APPLICATION_JSON)
