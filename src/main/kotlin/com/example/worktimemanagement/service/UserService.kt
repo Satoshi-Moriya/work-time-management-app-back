@@ -2,9 +2,12 @@ package com.example.worktimemanagement.service
 
 import com.example.worktimemanagement.controller.*
 import com.example.worktimemanagement.entity.User
+import com.example.worktimemanagement.error.InvalidPasswordException
 import com.example.worktimemanagement.repository.UserRepository
+import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -16,9 +19,9 @@ interface UserService {
 
     fun deleteByUserId(userId: Int)
 
-    fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest): UpdateUserEmailResponse
+    fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest)
     
-    fun updateUserPassword(request: UpdateUserPasswordRequest): UpdateUserPasswordResponse
+    fun updateUserPassword(request: UpdateUserPasswordRequest)
 }
 
 @Service
@@ -55,38 +58,32 @@ class UserServiceImpl(
         userRepository.deleteByUserId(userId, deletedAt)
     }
 
-    override fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest): UpdateUserEmailResponse {
+    override fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest) {
         return userRepository.getCurrentPassword(includeNewEmailRequest.userId)
-            ?.let { userCurrentPassword ->
+            .let { userCurrentPassword ->
                 if (bCryptPasswordEncoder.matches(includeNewEmailRequest.password, userCurrentPassword)) {
                     userRepository.updateUserEmail(
                         includeNewEmailRequest.userId,
                         includeNewEmailRequest.email
                     )
-                    UpdateUserEmailResponse("メールアドレスが更新されました。")
                 } else {
-                    UpdateUserEmailResponse("パスワードが間違っており、メールアドレスの更新ができませんでした。")
+                    throw InvalidPasswordException("無効なパスワードです。")
                 }
-            } ?: (
-                UpdateUserEmailResponse("予期せぬ問題が起こり、メールアドレスの更新ができませんでした。")
-            )
+            }
     }
 
-    override fun updateUserPassword(updateUserPasswordRequest: UpdateUserPasswordRequest): UpdateUserPasswordResponse {
+    override fun updateUserPassword(updateUserPasswordRequest: UpdateUserPasswordRequest) {
         return userRepository.getCurrentPassword(updateUserPasswordRequest.userId)
-            ?.let { userCurrentPassword ->
+            .let { userCurrentPassword ->
                 if (bCryptPasswordEncoder.matches(updateUserPasswordRequest.currentPassword, userCurrentPassword)) {
                     userRepository.updateUserPassword(
                         updateUserPasswordRequest.userId,
                         bCryptPasswordEncoder.encode(updateUserPasswordRequest.newPassword)
                     )
-                    UpdateUserPasswordResponse("パスワードが更新されました。")
                 } else {
-                    UpdateUserPasswordResponse("現在のパスワードが間違っており、パスワードの更新ができませんでした。")
+                    throw InvalidPasswordException("無効なパスワードです。")
                 }
-            } ?: (
-                UpdateUserPasswordResponse("予期せぬ問題が起こり、パスワードの更新ができませんでした。")
-            )
+            }
     }
 
     private fun getCurrentDateTimeAsString(): String {
@@ -94,5 +91,5 @@ class UserServiceImpl(
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         return currentDateTime.format(formatter)
     }
-}
 
+}

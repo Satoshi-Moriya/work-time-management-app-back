@@ -1,8 +1,10 @@
 package com.example.worktimemanagement.controller
 
+import com.example.worktimemanagement.dto.CustomResponse
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.service.UserService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
@@ -31,21 +33,24 @@ class UserController(val userService: UserService) {
     }
 
     @DeleteMapping("/user/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteUser(@PathVariable userId: Int) {
+    @ResponseStatus(HttpStatus.OK)
+    fun deleteUser(@PathVariable userId: Int): ResponseEntity<CustomResponse> {
         userService.deleteByUserId(userId)
+        return ResponseEntity.ok(CustomResponse("アカウント削除が成功しました。"))
     }
 
     @PutMapping("/users/{userId}/email")
     @ResponseStatus(HttpStatus.OK)
-    fun updateUserEmail(@RequestBody request: IncludeNewEmailRequest): UpdateUserEmailResponse {
-        return userService.updateUserEmail(request)
+    fun updateUserEmail(@RequestBody request: IncludeNewEmailRequest): ResponseEntity<CustomResponse> {
+        userService.updateUserEmail(request)
+        return ResponseEntity.ok(CustomResponse("メールアドレスが更新されました。"))
     }
 
     @PutMapping("/users/{userId}/password")
     @ResponseStatus(HttpStatus.OK)
-    fun updateUserPassword(@RequestBody request: UpdateUserPasswordRequest): UpdateUserPasswordResponse {
-        return userService.updateUserPassword(request)
+    fun updateUserPassword(@RequestBody request: UpdateUserPasswordRequest): ResponseEntity<CustomResponse> {
+        userService.updateUserPassword(request)
+        return ResponseEntity.ok(CustomResponse("パスワードが更新されました。"))
     }
 }
 
@@ -62,16 +67,8 @@ data class IncludeNewEmailRequest (
     val password: String
 )
 
-data class UpdateUserEmailResponse (
-    val message: String
-)
-
 data class UpdateUserPasswordRequest (
     val userId: Int,
     val currentPassword: String,
     val newPassword: String
-)
-
-data class UpdateUserPasswordResponse (
-    val message: String
 )

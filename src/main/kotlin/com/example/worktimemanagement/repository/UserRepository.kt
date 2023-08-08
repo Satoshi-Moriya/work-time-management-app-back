@@ -20,7 +20,7 @@ interface UserRepository : CrudRepository<User, Int> {
     fun deleteByUserId(userId: Int, deletedAt: String)
 
     @Query("SELECT u.userPassword FROM User u WHERE u.userId = :userId")
-    fun getCurrentPassword(userId: Int): String?
+    fun getCurrentPassword(userId: Int): String
 
     @Modifying
     @Query("UPDATE User u SET u.userEmail = :userEmail WHERE u.userId = :userId")
