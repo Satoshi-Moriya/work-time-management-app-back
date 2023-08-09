@@ -1,5 +1,6 @@
 package com.example.worktimemanagement.controller
 
+import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.service.UserService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,6 +37,31 @@ class UserControllerTest {
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build()
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、ステータス201が返ってくる`() {
+        val mockUserRequest = User(1, "mockEmail@test.com", "mockPass1235", "2023-07-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isCreated)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、userServiceのsave()が呼ばれる`() {
+        val mockUserRequest = User(1, "mockEmail@test.com", "mockPass1235", "2023-07-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+
+        verify(mockUserService, times(1)).save(mockUserRequest)
     }
 
     @Test

@@ -4,16 +4,14 @@ import com.example.worktimemanagement.controller.*
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.error.InvalidPasswordException
 import com.example.worktimemanagement.repository.UserRepository
-import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 interface UserService {
 
-    fun save(user: User): User
+    fun save(user: User)
 
     fun findByUserEmail(username: String): AuthUserResponse
 
@@ -30,8 +28,16 @@ class UserServiceImpl(
     val bCryptPasswordEncoder: BCryptPasswordEncoder
 ): UserService {
 
-    override fun save(user: User): User {
-        return userRepository.save(user)
+    override fun save(user: User) {
+        val hashPassUser = User(
+            user.userId,
+            user.userEmail,
+            bCryptPasswordEncoder.encode(user.userPassword),
+            user.createdAt,
+            null,
+            null
+        )
+        userRepository.save(hashPassUser)
     }
 
     override fun findByUserEmail(userEmail: String): AuthUserResponse {

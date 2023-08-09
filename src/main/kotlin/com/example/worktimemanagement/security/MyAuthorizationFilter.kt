@@ -17,8 +17,13 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
         private val key by lazy { Keys.hmacShaKeyFor(secretKey.toByteArray()) }
     }
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-        val token =  request.cookies.find { it.name == "token" }?.value
 
+        if (request.requestURI == "/auth/signup") {
+            chain.doFilter(request, response)
+            return
+        }
+
+        val token =  request.cookies.find { it.name == "token" }?.value
         if (token == null) {
             chain.doFilter(request, response)
             return

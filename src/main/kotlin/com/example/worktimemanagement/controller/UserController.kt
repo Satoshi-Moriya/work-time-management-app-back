@@ -16,8 +16,8 @@ class UserController(val userService: UserService) {
 
     @PostMapping("/auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    fun register(@RequestBody userBody: User): User {
-        return userService.save(userBody)
+    fun register(@RequestBody user: User) {
+        userService.save(user)
     }
 
     @GetMapping("/auth/user")
