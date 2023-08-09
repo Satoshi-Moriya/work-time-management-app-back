@@ -28,6 +28,17 @@ class UserServiceTest {
     private lateinit var userService: UserServiceImpl
 
     @Test
+    fun `save()が実行されると、userRepositoryのsave()が実行される`() {
+        val mockUserRequest = User(1, "mockEmail@test.com", "mockPass1235", "2023-07-01 09:00:00", null, null)
+        val mockIncludeHashPassUserRequest = User(1, "mockEmail@test.com", "mockHashPass1235", "2023-07-01 09:00:00", null, null)
+        `when`(bCryptPasswordEncoder.encode("mockPass1235")).thenReturn("mockHashPass1235")
+
+        userService.save(mockUserRequest)
+
+        verify(mockUserRepository, times(1)).save(mockIncludeHashPassUserRequest)
+    }
+
+    @Test
     fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つかった場合、「true」と「認証されたユーザーです。」とuserIdとuserEmailが返る`() {
         `when`(mockUserRepository.findByUserEmail("test@example.com"))
             .thenReturn(Optional.of(User(1, "test@example.com", "password1234", "2023-07-01 09:00:00", null, null)))
