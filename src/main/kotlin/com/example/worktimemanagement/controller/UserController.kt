@@ -13,11 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @CrossOrigin
 class UserController(val userService: UserService) {
-
-    // テストリクエスト
-    // curl --location --request POST 'http://localhost:8080/auth/signup' \
-    // --header 'Content-Type: application/json' \
-    // --data-raw '{"userEmail" : "ユニークなメールアドレスを設定", "userPassword" : "test5678", "createdAt" : "2023-07-03 12:00:00", "updatedAt" : null, "deletedAt" : null}' | jq
+    
     @PostMapping("/auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun register(@RequestBody userBody: User): User {
@@ -32,7 +28,7 @@ class UserController(val userService: UserService) {
         return userService.findByUserEmail(username)
     }
 
-    @DeleteMapping("/user/{userId}")
+    @DeleteMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.OK)
     fun deleteUser(@PathVariable userId: Int): ResponseEntity<CustomResponse> {
         userService.deleteByUserId(userId)

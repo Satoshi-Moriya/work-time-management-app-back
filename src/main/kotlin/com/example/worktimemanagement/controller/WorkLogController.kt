@@ -9,17 +9,12 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin
 class WorkLogController(val workLogService: WorkLogService) {
 
-    // テストリクエスト
-    // curl --location --request GET 'http://localhost:8080/work-logs/user-id/1?from=20230601&to=20230630'
-    @GetMapping("/work-logs/user-id/{userId}")
+    @GetMapping("/work-log/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)
     fun getSelectedMonthlyWorkLog(@PathVariable userId: Int, @RequestParam("from") fromDate: String, @RequestParam("to") toDate: String): List<WorkLog> {
         return workLogService.findByBetweenYearAndMonth(userId, fromDate, toDate)
     }
 
-    // テストリクエスト
-    // curl --location --request POST 'http://localhost:8080/work-log' \
-    // --header 'Content-Type: application/json' \
-    // --data-raw '{"workLogUserId" : "1", "workLogDate" : "2023-07-03", "workLogStartTime" : "2023-07-03 9:00:59", "workLogEndTime" : "2023-07-03 12:00:00", "workLogSeconds" : "10741"}' | jq
     @PostMapping("/work-log")
     @ResponseStatus(HttpStatus.CREATED)
     fun save(@RequestBody workLogBody: WorkLog): List<WorkLog> {
