@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @CrossOrigin
 class UserController(val userService: UserService) {
-    
+
     @PostMapping("/auth/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun register(@RequestBody userBody: User): User {

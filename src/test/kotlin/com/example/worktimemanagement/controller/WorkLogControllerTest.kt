@@ -39,15 +39,15 @@ class WorkLogControllerTest {
     }
 
     @Test
-    fun `GET「work-logs」が呼ばれたときにステータス200が返ってくる`() {
-        mockMvc.perform(get("/work-logs/user-id/1")
+    fun `GET「／work-log／users／{userId}」が呼ばれたときにステータス200が返ってくる`() {
+        mockMvc.perform(get("/work-log/users/1")
             .param("from", "20230601")
             .param("to", "20230630"))
             .andExpect(status().isOk)
     }
 
     @Test
-    fun `GET「work-logs」が呼ばれたときにfindByBetweenYearAndMonth()が実行されて、指定したuserと指定した年月のデータが返ってくる`() {
+    fun `GET「／work-log／users／{userId}」が呼ばれたときにfindByBetweenYearAndMonth()が実行されて、指定したuserと指定した年月のデータが返ってくる`() {
 
         `when`(mockWorkLogService.findByBetweenYearAndMonth(1,"20230601", "20230630"))
             .thenReturn(listOf(
@@ -55,7 +55,7 @@ class WorkLogControllerTest {
                 WorkLog(2,1, "2023-06-01", "2023-06-29 13:00:00", "2023-06-29 18:00:00", 18000)
             ))
 
-        mockMvc.perform(get("/work-logs/user-id/1")
+        mockMvc.perform(get("/work-log/users/1")
             .param("from", "20230601")
             .param("to", "20230630"))
             .andExpect(jsonPath("$[0].workLogId").value(1))
@@ -75,7 +75,7 @@ class WorkLogControllerTest {
     }
 
     @Test
-    fun `POST「work-log」が呼ばれたときにステータス200が返ってくる`() {
+    fun `POST「／work-log」が呼ばれたときにステータス200が返ってくる`() {
         val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(testWorkLog)
@@ -87,7 +87,7 @@ class WorkLogControllerTest {
     }
 
     @Test
-    fun `POST「work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
+    fun `POST「／work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
         val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(testWorkLog)
@@ -110,7 +110,7 @@ class WorkLogControllerTest {
     }
 
     @Test
-    fun `2日間にわたるPOST「work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
+    fun `2日間にわたるPOST「／work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
         val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 23:30:00", "2023-07-04 01:00:00", 5400)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(testWorkLog)

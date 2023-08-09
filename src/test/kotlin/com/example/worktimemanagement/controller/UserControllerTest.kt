@@ -1,6 +1,5 @@
 package com.example.worktimemanagement.controller
 
-import com.example.worktimemanagement.dto.CustomResponse
 import com.example.worktimemanagement.service.UserService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -65,9 +64,9 @@ class UserControllerTest {
     }
 
     @Test
-    fun `DELETE「／user／userId」が呼ばれたとき、userServiceのdeleteByUserId()が呼ばれる`() {
+    fun `DELETE「／users／userId」が呼ばれたとき、userServiceのdeleteByUserId()が呼ばれる`() {
 
-        mockMvc.perform(delete("/user/1"))
+        mockMvc.perform(delete("/users/1"))
 
         verify(mockUserService, times(1)).deleteByUserId(1)
     }
