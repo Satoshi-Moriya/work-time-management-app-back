@@ -51,7 +51,7 @@ class WorkLogControllerTest {
 
         `when`(mockWorkLogService.findByBetweenYearAndMonth(1,"20230601", "20230630"))
             .thenReturn(listOf(
-                WorkLog(1,1, "2023-06-01", "2023-06-29 9:00:59", "2023-06-29 12:00:00", 10701),
+                WorkLog(1,1, "2023-06-01", "2023-06-29 09:00:59", "2023-06-29 12:00:00", 10701),
                 WorkLog(2,1, "2023-06-01", "2023-06-29 13:00:00", "2023-06-29 18:00:00", 18000)
             ))
 
@@ -61,7 +61,7 @@ class WorkLogControllerTest {
             .andExpect(jsonPath("$[0].workLogId").value(1))
             .andExpect(jsonPath("$[0].workLogUserId").value(1))
             .andExpect(jsonPath("$[0].workLogDate").value("2023-06-01"))
-            .andExpect(jsonPath("$[0].workLogStartTime").value("2023-06-29 9:00:59"))
+            .andExpect(jsonPath("$[0].workLogStartTime").value("2023-06-29 09:00:59"))
             .andExpect(jsonPath("$[0].workLogEndTime").value("2023-06-29 12:00:00"))
             .andExpect(jsonPath("$[0].workLogSeconds").value(10701))
             .andExpect(jsonPath("$[1].workLogId").value(2))
@@ -75,8 +75,82 @@ class WorkLogControllerTest {
     }
 
     @Test
+    fun `WorkLogのworkLogDateに空文字が入っている場合、ステータス400が返ってくる（POST「／work-log」を利用して確認）`() {
+        val testWorkLog = WorkLog(0,1, "", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `WorkLogのworkLogDateの年のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／work-log」を利用して確認）`() {
+        val testWorkLog = WorkLog(0,1, "223-07-03", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `WorkLogのworkLogDateの月が13の場合、ステータス400が返ってくる（POST「／work-log」を利用して確認）`() {
+        val testWorkLog = WorkLog(0,1, "2023-13-03", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `WorkLogのworkLogDateの月のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／work-log」を利用して確認）`() {
+        val testWorkLog = WorkLog(0,1, "2023-7-03", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `WorkLogのworkLogDateの日が32の場合、ステータス400が返ってくる（POST「／work-log」を利用して確認）`() {
+        val testWorkLog = WorkLog(0,1, "2023-07-32", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `WorkLogのworkLogDateの日のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／work-log」を利用して確認）`() {
+        val testWorkLog = WorkLog(0,1, "2023-07-3", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(testWorkLog)
+
+        mockMvc.perform(post("/work-log")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    // workLogStartTimeとworkLogEndTimeはUserのcreatedAtなどと同じPatternなのでテストなし
+
+    @Test
     fun `POST「／work-log」が呼ばれたときにステータス200が返ってくる`() {
-        val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701)
+        val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(testWorkLog)
 
@@ -88,11 +162,11 @@ class WorkLogControllerTest {
 
     @Test
     fun `POST「／work-log」が呼ばれたときにsaveAll()が実行されて、登録データが返ってくる`() {
-        val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701)
+        val testWorkLog = WorkLog(0,1, "2023-07-03", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(testWorkLog)
 
-        val expectedWorkLog = listOf(WorkLog(1,1, "2023-07-03", "2023-07-03 9:00:59", "2023-07-03 12:00:00", 10701))
+        val expectedWorkLog = listOf(WorkLog(1,1, "2023-07-03", "2023-07-03 09:00:59", "2023-07-03 12:00:00", 10701))
         `when`(mockWorkLogService.save(testWorkLog))
             .thenReturn(expectedWorkLog)
 
@@ -102,7 +176,7 @@ class WorkLogControllerTest {
             .andExpect(jsonPath("$[0].workLogId").value(1))
             .andExpect(jsonPath("$[0].workLogUserId").value(1))
             .andExpect(jsonPath("$[0].workLogDate").value("2023-07-03"))
-            .andExpect(jsonPath("$[0].workLogStartTime").value("2023-07-03 9:00:59"))
+            .andExpect(jsonPath("$[0].workLogStartTime").value("2023-07-03 09:00:59"))
             .andExpect(jsonPath("$[0].workLogEndTime").value("2023-07-03 12:00:00"))
             .andExpect(jsonPath("$[0].workLogSeconds").value(10701))
 
