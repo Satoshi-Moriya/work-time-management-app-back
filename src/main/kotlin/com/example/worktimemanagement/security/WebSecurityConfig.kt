@@ -9,11 +9,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -21,7 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig(val userDetailsService: UserDetailsService) {
+class WebSecurityConfig(private val myUserDetailsService: MyUserDetailsService) {
 
     @Autowired
     private lateinit var myLogoutSuccessHandler: MyLogoutSuccessHandler
@@ -34,20 +31,20 @@ class WebSecurityConfig(val userDetailsService: UserDetailsService) {
             .cors {  }
             .authorizeHttpRequests {
                 authorize -> authorize
-                    .requestMatchers("/login", "/auth/signup").permitAll()
+                    .requestMatchers("/login", "/auth/signup", "/refresh-token").permitAll()
                     .anyRequest().authenticated()
             }
             .csrf {
                 csrf -> csrf.disable()
             }
-            .addFilter(MyAuthenticationFilter(authenticationManager, bCryptPasswordEncoder()))
+            .addFilter(MyAuthenticationFilter(authenticationManager, bCryptPasswordEncoder(), myUserDetailsService))
             .addFilter(MyAuthorizationFilter(authenticationManager))
             .sessionManagement{session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .logout {
                     logout -> logout
-                        .deleteCookies("token")
+                        .deleteCookies("accessToken", "refreshToken")
                         .logoutSuccessHandler(myLogoutSuccessHandler)
             }
 
