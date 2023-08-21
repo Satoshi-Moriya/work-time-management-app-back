@@ -79,3 +79,15 @@ INSERT INTO users
   (user_id, user_email, user_password, created_at, updated_at, deleted_at)
 VALUES
   (0, "saburou@example.com", "$2a$08$5K4IKtevp8CisDhWnL9GPu1Htp5.8rzXG8ci8upb2MIZMMTiiq8bi", "2023-07-01 10:00:00", null, "2023-07-03 10:00:00");
+
+DROP TABLE IF EXISTS refresh_token;
+
+CREATE TABLE IF NOT EXISTS refresh_token
+(
+  refresh_token_id     INT NOT NULL AUTO_INCREMENT,
+  user_email           VARCHAR(255) NOT NULL,
+  refresh_token        VARCHAR(255) NOT NULL,
+  refresh_token_iat    DATETIME NOT NULL,
+  PRIMARY KEY (refresh_token_id),
+  UNIQUE KEY (user_email)
+);

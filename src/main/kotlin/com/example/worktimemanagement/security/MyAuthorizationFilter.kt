@@ -18,12 +18,12 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
     }
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
 
-        if (request.requestURI == "/auth/signup") {
+        if (request.requestURI == "/auth/signup" || request.requestURI == "/refresh-token") {
             chain.doFilter(request, response)
             return
         }
 
-        val token =  request.cookies.find { it.name == "token" }?.value
+        val token =  request.cookies.find { it.name == "accessToken" }?.value
         if (token == null) {
             chain.doFilter(request, response)
             return
@@ -36,7 +36,7 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
     }
 
     private fun getAuthentication(request: HttpServletRequest): UsernamePasswordAuthenticationToken? {
-        val token = request.cookies.find { it.name == "token" }?.value
+        val token = request.cookies.find { it.name == "accessToken" }?.value
         if (token != null) {
             val user: String = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -48,7 +48,6 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
             if (user != null) {
                 return UsernamePasswordAuthenticationToken(user, null, ArrayList())
             }
-            return null
         }
         return null
     }

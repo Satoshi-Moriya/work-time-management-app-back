@@ -28,4 +28,20 @@ class ExceptionHandler: ResponseEntityExceptionHandler() {
     private fun createErrorResponseBody(exception: InvalidPasswordException, request: WebRequest): CustomResponse {
         return CustomResponse(exception.message)
     }
+
+    @ExceptionHandler(ExpiredRefreshTokenException::class)
+    fun handleExpiredRefreshTokenException(exception: ExpiredRefreshTokenException, request: WebRequest): ResponseEntity<Any>? {
+        val headers = HttpHeaders()
+
+        return handleExceptionInternal(
+            exception,
+            createErrorResponseBody(exception, request),
+            headers,
+            HttpStatus.UNAUTHORIZED,
+            request)
+    }
+
+    private fun createErrorResponseBody(exception: ExpiredRefreshTokenException, request: WebRequest): CustomResponse {
+        return CustomResponse(exception.message)
+    }
 }
