@@ -18,7 +18,9 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
     }
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
 
-        if (request.requestURI == "/auth/signup" || request.requestURI == "/refresh-token") {
+        if (request.requestURI == "/auth/signup"
+            || request.requestURI == "/refresh-token"
+            || request.requestURI == "/csrf")  {
             chain.doFilter(request, response)
             return
         }

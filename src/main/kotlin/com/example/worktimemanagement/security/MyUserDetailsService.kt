@@ -81,9 +81,6 @@ class MyUserDetailsService(
             return false
         }
 
-        println(refreshToken)
-        println(refreshTokenEntity.refreshToken)
-        println(StringUtils.isNotEmpty(refreshTokenEntity.refreshToken))
         return StringUtils.isNotEmpty(refreshTokenEntity.refreshToken) && bCryptPasswordEncoder.matches(refreshToken, refreshTokenEntity.refreshToken);
     }
 
