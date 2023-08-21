@@ -2,6 +2,7 @@ package com.example.worktimemanagement.controller
 
 import com.example.worktimemanagement.dto.UserIssueToken
 import com.example.worktimemanagement.error.ExpiredRefreshTokenException
+import com.example.worktimemanagement.repository.RefreshTokenRepository
 import com.example.worktimemanagement.security.MyUserDetailsService
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
@@ -10,7 +11,7 @@ import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.web.csrf.CsrfToken
 import org.springframework.web.bind.annotation.*
 
 
@@ -19,7 +20,8 @@ import org.springframework.web.bind.annotation.*
 class RefreshTokenController(
     @Value("\${jwt.accesstoken.secretkey}")
     private val accessTokenSecret: String,
-    private val myUserDetailsService: MyUserDetailsService
+    private val myUserDetailsService: MyUserDetailsService,
+    private val refreshTokenRepository: RefreshTokenRepository
 ) {
 
     @PostMapping("/refresh-token")
@@ -51,6 +53,9 @@ class RefreshTokenController(
             response.addCookie(refreshTokenCookie)
             return newToken
         } else {
+            // refreshTokenの期限切れだから、refreshTokenがDBにないことはない!!
+            val deleteRefreshToken = refreshTokenRepository.findByUserEmail(jwtClaims.subject)
+            refreshTokenRepository.delete(deleteRefreshToken!!)
             throw ExpiredRefreshTokenException("トークンの有効期限がきれました。ログインし直してください。")
         }
     }
@@ -60,5 +65,10 @@ class RefreshTokenController(
             path = "/"
             isHttpOnly = true
         }
+    }
+
+    @PostMapping("/csrf")
+    fun csrf(token: CsrfToken?): CsrfToken? {
+        return token
     }
 }

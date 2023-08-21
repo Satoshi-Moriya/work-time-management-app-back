@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.csrf.CsrfTokenRepository
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -31,11 +33,12 @@ class WebSecurityConfig(private val myUserDetailsService: MyUserDetailsService) 
             .cors {  }
             .authorizeHttpRequests {
                 authorize -> authorize
-                    .requestMatchers("/login", "/auth/signup", "/refresh-token").permitAll()
+                    .requestMatchers("/login", "/auth/signup", "/refresh-token", "/csrf").permitAll()
                     .anyRequest().authenticated()
             }
             .csrf {
-                csrf -> csrf.disable()
+                csrf -> csrf
+                    .ignoringRequestMatchers("/auth/signup", "/csrf")
             }
             .addFilter(MyAuthenticationFilter(authenticationManager, bCryptPasswordEncoder(), myUserDetailsService))
             .addFilter(MyAuthorizationFilter(authenticationManager))
