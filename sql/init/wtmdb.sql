@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS work_logs
   work_log_end_time      DATETIME NOT NULL,
   work_log_seconds       MEDIUMINT NOT NULL,
   PRIMARY KEY (work_log_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO work_logs
   (work_log_id, work_log_user_id, work_log_date, work_log_start_time, work_log_end_time, work_log_seconds)
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS users
   deleted_at           DATETIME,
   PRIMARY KEY (user_id),
   UNIQUE KEY (user_email)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO users
   (user_id, user_email, user_password, created_at, updated_at, deleted_at)
@@ -90,4 +90,30 @@ CREATE TABLE IF NOT EXISTS refresh_token
   refresh_token_iat    DATETIME NOT NULL,
   PRIMARY KEY (refresh_token_id),
   UNIQUE KEY (user_email)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS record_items;
+
+CREATE TABLE IF NOT EXISTS record_items
+(
+  record_item_id      INT NOT NULL AUTO_INCREMENT,
+  user_id             INT NOT NULL,
+  record_item_name    VARCHAR(255) NOT NULL,
+  PRIMARY KEY (record_item_id),
+  UNIQUE KEY(user_id, record_item_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO record_items
+  (record_item_id, user_id, record_item_name)
+VALUES
+  (0, 1, "ドラム練習");
+
+INSERT INTO record_items
+  (record_item_id, user_id, record_item_name)
+VALUES
+  (0, 1, "仕事稼働時間");
+
+INSERT INTO record_items
+  (record_item_id, user_id, record_item_name)
+VALUES
+  (0, 2, "稼働時間");
