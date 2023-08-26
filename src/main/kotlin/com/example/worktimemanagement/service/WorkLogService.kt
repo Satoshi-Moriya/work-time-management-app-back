@@ -7,10 +7,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.collections.ArrayList
 
-const val INSERT_HYPHEN_POSITION1 = 4
-const val INSERT_HYPHEN_POSITION2 = 7
-const val SECOND_OF_DAY = 60 * 60 * 24
-const val TIME_ZERO_HHMMSS = "00:00:00"
+//const val INSERT_HYPHEN_POSITION1 = 4
+//const val INSERT_HYPHEN_POSITION2 = 7
+//const val SECOND_OF_DAY = 60 * 60 * 24
+//const val TIME_ZERO_HHMMSS = "00:00:00"
 
 interface WorkLogService {
     fun findByBetweenYearAndMonth(userId: Int, fromDate: String, toDate: String): List<WorkLog>
