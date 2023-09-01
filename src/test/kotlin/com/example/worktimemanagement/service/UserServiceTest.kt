@@ -68,6 +68,16 @@ class UserServiceTest {
     }
 
     @Test
+    fun `fetchUserEmail()が実行されると、userRepositoryのfindByUserId()が実行される`() {
+        `when`(mockUserRepository.findByUserId(1))
+            .thenReturn(User(1, "test@example.com", "password1234", "2023-07-01 09:00:00", null, null))
+
+        userService.fetchUserEmail(1)
+
+        verify(mockUserRepository, times(1)).findByUserId(1)
+    }
+
+    @Test
     fun `updateUserEmail()が実行され、現在のパスワードと入力されたパスワードが一致した時、userRepositoryのupdateUserEmail()が実行される` () {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
 
