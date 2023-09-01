@@ -36,4 +36,6 @@ interface UserRepository : CrudRepository<User, Int> {
     @Modifying
     @Query("UPDATE User u SET u.userPassword = :newPassword WHERE u.userId = :userId")
     fun updateUserPassword(userId: Int, newPassword: String)
+
+    fun findByUserId(userId: Int): User
 }

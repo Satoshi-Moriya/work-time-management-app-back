@@ -20,6 +20,7 @@ interface UserService {
     fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest)
     
     fun updateUserPassword(request: UpdateUserPasswordRequest)
+    fun fetchUserEmail(userId: Int): String
 }
 
 @Service
@@ -62,6 +63,10 @@ class UserServiceImpl(
     override fun deleteByUserId(userId: Int) {
         val deletedAt = getCurrentDateTimeAsString()
         userRepository.deleteByUserId(userId, deletedAt)
+    }
+
+    override fun fetchUserEmail(userId: Int): String {
+        return userRepository.findByUserId(userId).userEmail
     }
 
     override fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest) {

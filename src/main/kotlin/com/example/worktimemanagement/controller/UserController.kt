@@ -38,6 +38,12 @@ class UserController(val userService: UserService) {
         return ResponseEntity.ok(CustomResponse("アカウント削除が成功しました。"))
     }
 
+    @GetMapping("/users/{userId}/email")
+    @ResponseStatus(HttpStatus.OK)
+    fun fetchUserEmail(@PathVariable @NotNull userId: Int): String {
+        return userService.fetchUserEmail(userId)
+    }
+
     @PutMapping("/users/{userId}/email")
     @ResponseStatus(HttpStatus.OK)
     fun updateUserEmail(@RequestBody @Validated request: IncludeNewEmailRequest): ResponseEntity<CustomResponse> {

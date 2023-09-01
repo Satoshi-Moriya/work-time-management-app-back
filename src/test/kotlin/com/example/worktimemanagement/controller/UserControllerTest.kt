@@ -294,6 +294,12 @@ class UserControllerTest {
     }
 
     @Test
+    fun `GET「／users／userId／email」が正常に呼ばれたとき、ステータス200が返ってくる`() {
+        mockMvc.perform(get("/users/1/email"))
+            .andExpect(status().isOk)
+    }
+
+    @Test
     fun `PUT「／users／userId／email」が正常に呼ばれたとき、ステータス200が返ってくる`() {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
         val mapper = ObjectMapper()
