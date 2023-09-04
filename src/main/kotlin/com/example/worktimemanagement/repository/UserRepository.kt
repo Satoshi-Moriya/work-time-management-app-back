@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.Optional
 
 @Transactional
 @Repository
@@ -16,7 +15,7 @@ interface UserRepository : CrudRepository<User, Int> {
     fun getByUserEmail(email: String): String
 
     @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")
-    fun findByUserEmail(email: String): Optional<User>
+    fun findByUserEmail(email: String): User?
 
     // ToDo 上記findByUserEmailと統合する
     @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")

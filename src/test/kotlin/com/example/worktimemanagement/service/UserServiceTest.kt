@@ -41,7 +41,7 @@ class UserServiceTest {
     @Test
     fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つかった場合、「true」と「認証されたユーザーです。」とuserIdとuserEmailが返る`() {
         `when`(mockUserRepository.findByUserEmail("test@example.com"))
-            .thenReturn(Optional.of(User(1, "test@example.com", "password1234", "2023-07-01 09:00:00", null, null)))
+            .thenReturn(User(1, "test@example.com", "password1234", "2023-07-01 09:00:00", null, null))
 
         val expectAuthUserResponse = AuthUserResponse(true, "認証されたユーザーです。", 1, "test@example.com")
         assertEquals(expectAuthUserResponse, userService.findByUserEmail("test@example.com"))
@@ -52,7 +52,7 @@ class UserServiceTest {
     @Test
     fun `findByUserEmail()が実行されると、userRepositoryのfindByUserEmail()が実行され、ユーザーが見つからなかった場合、「false」と「認証されたユーザーではありません。」nullが返る`() {
         `when`(mockUserRepository.findByUserEmail("test@example.com"))
-            .thenReturn(Optional.empty())
+            .thenReturn(null)
 
         val expectAuthUserResponse = AuthUserResponse(false, "認証されたユーザーではありません。", null, null)
         assertEquals(expectAuthUserResponse, userService.findByUserEmail("test@example.com"))

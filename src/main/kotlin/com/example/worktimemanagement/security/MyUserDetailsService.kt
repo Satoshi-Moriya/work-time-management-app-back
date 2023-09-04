@@ -46,7 +46,7 @@ class MyUserDetailsService(
             throw UsernameNotFoundException("ユーザーが見つかりませんでした: $email")
         }
 
-        return MyUserDetails(userRepository.findByUserEmail(email).orElse(null))
+        return MyUserDetails(userRepository.findByUserEmail(email)?: throw UsernameNotFoundException("ユーザーが見つかりませんでした: $email"))
     }
 
     // 新しいアクセストークンを発行する
