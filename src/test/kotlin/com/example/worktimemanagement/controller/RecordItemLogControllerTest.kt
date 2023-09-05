@@ -16,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -165,5 +166,16 @@ class RecordItemLogControllerTest {
 
     // recordItemLogStartTimeとrecordItemLogEndTimeはUserのcreatedAtなどと同じPatternなのでテストなし
 
+    // Delete「/record-item-logs/{recordItemId}」のテスト
+    @Test
+    fun `DELETE「／record-item-logs／{recordItemId}」のrecordItemIdが1で呼ばれたとき、ステータス204が返ってくる（正常系）`() {
+        mockMvc.perform(delete("/record-item-logs/1"))
+            .andExpect(status().isNoContent)
+    }
 
+    @Test
+    fun `DELETE「／record-item-logs／{recordItemId}」のrecordItemIdがnullで呼ばれたとき、ステータス400が返ってくる（異常系＆バリデーションチェック）`() {
+        mockMvc.perform(delete("/record-item-logs/null"))
+            .andExpect(status().isBadRequest)
+    }
 }
