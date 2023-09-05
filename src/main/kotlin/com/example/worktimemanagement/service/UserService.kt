@@ -42,22 +42,20 @@ class UserServiceImpl(
     }
 
     override fun findByUserEmail(userEmail: String): AuthUserResponse {
-        return userRepository.findByUserEmail(userEmail)
-            .map { user ->
+        return userRepository.findByUserEmail(userEmail)?.let {
+            user ->
                 AuthUserResponse(
                     true,
                     "認証されたユーザーです。",
                     user.userId,
                     user.userEmail
                 )
-            }
-            .orElse(
-                AuthUserResponse(
+            } ?: AuthUserResponse(
                     false,
                     "認証されたユーザーではありません。",
                     null,
                     null
-            ))
+                )
     }
 
     override fun deleteByUserId(userId: Int) {
