@@ -107,7 +107,7 @@ class MyUserDetailsService(
 
     @Throws(UsernameNotFoundException::class)
     fun findByUserEmail(userEmail: String): User {
-        return userRepository.findByUserEmailNotOptional(userEmail)
+        return userRepository.findByUserEmail(userEmail)
             ?: throw UsernameNotFoundException("User not found:[$userEmail]")
     }
 }

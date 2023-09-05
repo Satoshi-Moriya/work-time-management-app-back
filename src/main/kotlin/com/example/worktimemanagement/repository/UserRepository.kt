@@ -17,10 +17,6 @@ interface UserRepository : CrudRepository<User, Int> {
     @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")
     fun findByUserEmail(email: String): User?
 
-    // ToDo 上記findByUserEmailと統合する
-    @Query("SELECT u FROM User u WHERE u.userEmail = :email AND u.deletedAt IS NULL")
-    fun findByUserEmailNotOptional(email: String): User?
-
     @Modifying
     @Query("UPDATE User u SET u.deletedAt = :deletedAt WHERE u.userId = :userId")
     fun deleteByUserId(userId: Int, deletedAt: String)
