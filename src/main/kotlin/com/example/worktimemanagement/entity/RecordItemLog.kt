@@ -19,25 +19,22 @@ data class RecordItemLog (
     val recordItemLogId: Int,
 
     @Column(name = "record_item_id")
-    @NotNull
+    @field: NotNull
     val recordItemId: Int,
 
     @Column(name = "record_item_log_date")
-    @NotBlank
-    @field: Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])", message = "Invalid date format")
+    @field: [NotBlank Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])", message = "Invalid date format")]
     val recordItemLogDate: String,
 
     @Column(name = "record_item_log_start_time")
-    @NotBlank
-    @field: Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]) ([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]", message = "Invalid date format")
+    @field: [NotBlank Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]) ([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]", message = "Invalid date format")]
     val recordItemLogStartTime: String,
 
     @Column(name = "record_item_log_end_time")
-    @NotBlank
-    @field: Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]) (([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]|24:00:00)", message = "Invalid date format")
+    @field: [NotBlank Pattern(regexp = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]) (([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]|24:00:00)", message = "Invalid date format")]
     val recordItemLogEndTime: String,
 
     @Column(name = "record_item_log_seconds")
-    @NotNull
+    @field: NotNull
     val recordItemLogSeconds: Int = 0
 )

@@ -1,7 +1,6 @@
 package com.example.worktimemanagement.service
 
 import com.example.worktimemanagement.entity.RecordItem
-
 import com.example.worktimemanagement.repository.RecordItemRepository
 import org.springframework.stereotype.Service
 

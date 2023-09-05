@@ -16,10 +16,10 @@ data class RecordItem (
     val recordItemId: Int,
 
     @Column(name = "user_id")
-    @NotNull
+    @field: NotNull
     val userId: Int,
 
     @Column(name = "record_item_name")
-    @NotBlank
+    @field: NotBlank
     val recordItemName: String,
 )

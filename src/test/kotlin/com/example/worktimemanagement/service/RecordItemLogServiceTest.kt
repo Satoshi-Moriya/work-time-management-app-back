@@ -72,4 +72,12 @@ class RecordItemLogServiceTest {
         recordItemLogService.createRecordItemLog(mockRecordItemLog)
         verify(mockRecordItemLogRepository, times(1)).saveAll(expectRecordItemLogList)
     }
+
+    // deleteRecordItemLogのテスト
+    @Test
+    fun `deleteRecordItemLog()が実行されると、recordItemLogRepositoryのdeleteByRecordItemLogId()が実行される`() {
+        val mockRecordItemLogId = 1
+        recordItemLogService.deleteRecordItemLog(mockRecordItemLogId)
+        verify(mockRecordItemLogRepository, times(1)).deleteByRecordItemLogId(mockRecordItemLogId)
+    }
 }
