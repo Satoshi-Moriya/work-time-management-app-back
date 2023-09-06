@@ -68,7 +68,7 @@ class UserServiceImpl(
     }
 
     override fun updateUserEmail(includeNewEmailRequest: IncludeNewEmailRequest) {
-        return userRepository.getCurrentPassword(includeNewEmailRequest.userId)
+        return userRepository.fetchPassword(includeNewEmailRequest.userId)
             .let { userCurrentPassword ->
                 if (bCryptPasswordEncoder.matches(includeNewEmailRequest.password, userCurrentPassword)) {
                     userRepository.updateUserEmail(
@@ -82,7 +82,7 @@ class UserServiceImpl(
     }
 
     override fun updateUserPassword(updateUserPasswordRequest: UpdateUserPasswordRequest) {
-        return userRepository.getCurrentPassword(updateUserPasswordRequest.userId)
+        return userRepository.fetchPassword(updateUserPasswordRequest.userId)
             .let { userCurrentPassword ->
                 if (bCryptPasswordEncoder.matches(updateUserPasswordRequest.currentPassword, userCurrentPassword)) {
                     userRepository.updateUserPassword(
