@@ -81,7 +81,7 @@ class UserServiceTest {
     fun `updateUserEmail()が実行され、現在のパスワードと入力されたパスワードが一致した時、userRepositoryのupdateUserEmail()が実行される` () {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
 
-        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(mockUserRepository.fetchPassword(1)).thenReturn("encodedMockPass1234")
         `when`(bCryptPasswordEncoder.matches("mockPass1234", "encodedMockPass1234")).thenReturn(true)
 
         userService.updateUserEmail(mockIncludeNewEmailRequest)
@@ -93,7 +93,7 @@ class UserServiceTest {
     fun `updateUserEmail()が実行され、現在のパスワードと入力されたパスワードが一致しなかった時、「無効なパスワードです。」が返る` () {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1235")
 
-        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(mockUserRepository.fetchPassword(1)).thenReturn("encodedMockPass1234")
         `when`(bCryptPasswordEncoder.matches("mockPass1235", "encodedMockPass1234")).thenReturn(false)
 
         val e = assertThrows(InvalidPasswordException::class.java) { userService.updateUserEmail(mockIncludeNewEmailRequest) }
@@ -104,7 +104,7 @@ class UserServiceTest {
     fun `updateUserPassword()が実行され、現在のパスワードと入力されたパスワードが一致した時、userRepositoryのupdateUserPassword()が実行される` () {
         val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")
 
-        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(mockUserRepository.fetchPassword(1)).thenReturn("encodedMockPass1234")
         `when`(bCryptPasswordEncoder.matches("mockCurrentPass1234", "encodedMockPass1234")).thenReturn(true)
         `when`(bCryptPasswordEncoder.encode("mockNewPass1234")).thenReturn("mockEncodeNewPass1234")
 
@@ -117,7 +117,7 @@ class UserServiceTest {
     fun `updateUserPassword()が実行され、現在のパスワードと入力されたパスワードが一致しなかった時、「無効なパスワードです。」が返る` () {
         val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1235", "mockNewPass1234")
 
-        `when`(mockUserRepository.getCurrentPassword(1)).thenReturn("encodedMockPass1234")
+        `when`(mockUserRepository.fetchPassword(1)).thenReturn("encodedMockPass1234")
         `when`(bCryptPasswordEncoder.matches("mockCurrentPass1235", "encodedMockPass1234")).thenReturn(false)
 
         val e = assertThrows(InvalidPasswordException::class.java) { userService.updateUserPassword(mockUpdateUserPasswordRequest) }
