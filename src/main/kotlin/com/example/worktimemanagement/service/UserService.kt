@@ -1,6 +1,8 @@
 package com.example.worktimemanagement.service
 
-import com.example.worktimemanagement.controller.*
+import com.example.worktimemanagement.dto.AuthUserResponse
+import com.example.worktimemanagement.dto.IncludeNewEmailRequest
+import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.error.InvalidPasswordException
 import com.example.worktimemanagement.repository.UserRepository
