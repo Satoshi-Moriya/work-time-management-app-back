@@ -1,10 +1,11 @@
 package com.example.worktimemanagement.controller
 
+import com.example.worktimemanagement.dto.AuthUserResponse
 import com.example.worktimemanagement.dto.CustomResponse
+import com.example.worktimemanagement.dto.IncludeNewEmailRequest
+import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.service.UserService
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -58,34 +59,3 @@ class UserController(val userService: UserService) {
         return ResponseEntity.ok(CustomResponse("パスワードが更新されました。"))
     }
 }
-
-data class AuthUserResponse (
-    val success: Boolean,
-    val message: String,
-    val authUserId: Int?,
-    val authUserEmail: String?
-)
-
-data class IncludeNewEmailRequest (
-
-    @field: NotNull
-    val userId: Int,
-
-    @field: [Email NotBlank]
-    val email: String,
-
-    @field: NotBlank
-    val password: String
-)
-
-data class UpdateUserPasswordRequest (
-
-    @field: NotNull
-    val userId: Int,
-
-    @field: NotBlank
-    val currentPassword: String,
-
-    @field: NotBlank
-    val newPassword: String
-)

@@ -1,11 +1,11 @@
 package com.example.worktimemanagement.controller
 
+import com.example.worktimemanagement.dto.AuthUserResponse
+import com.example.worktimemanagement.dto.IncludeNewEmailRequest
+import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
 import com.example.worktimemanagement.service.UserService
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.validation.ConstraintViolationException
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -17,7 +17,6 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
