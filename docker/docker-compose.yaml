@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: wtm-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOTPASS}
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${USERNAME}
+      MYSQL_PASSWORD: ${USERPASS}
+    ports:
+      - 3306:3306
+    volumes:
+      - ./sql/init:/docker-entrypoint-initdb.d
+      - ./sql/my.cnf:/etc/mysql/conf.d/my.cnf
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u$${USERNAME} -p$${USERPASS}
+  app:
+    build: ./kotlin
+    image: my-kotlin
+    container_name: wtm-kotlin
+    working_dir: /app
+    tty: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../:/app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: ./gradlew bootRun
+    environment:
+      USER_PASS: ${USERPASS}
+      DATABASE: ${DATABASE}
+      USER_NAME: ${USERNAME}
+      MY_SECRET_KEY: ${SECRETKEY}
