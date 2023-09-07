@@ -1,5 +1,5 @@
-name Run Junit
-on [push]
+name: Run Junit
+on: [push]
 
 jobs:
   Junit:
