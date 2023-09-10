@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
 
@@ -43,7 +45,7 @@ class MyUserDetailsService(
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(email: String): UserDetails {
         if (email == null) {
-            throw UsernameNotFoundException("ユーザーが見つかりませんでした: $email")
+            throw UsernameNotFoundException("${email}のメールアドレスのユーザーが見つかりませんでした。")
         }
 
         return MyUserDetails(userRepository.findByUserEmail(email)?: throw UsernameNotFoundException("ユーザーが見つかりませんでした: $email"))
@@ -53,13 +55,13 @@ class MyUserDetailsService(
     @Throws(UsernameNotFoundException::class)
     @Transactional
     fun issueToken(userEmail: String): UserIssueToken {
-        val now: Instant = Instant.now()
+        val now = LocalDateTime.now()
         val key = Keys.hmacShaKeyFor(accessTokenSecret.toByteArray())
 
         val accessToken = Jwts.builder()
             .setSubject(userEmail)
-            .setIssuedAt(Date.from(now))
-            .setExpiration(Date.from(now.plusSeconds(accessTokenExpTime)))
+            .setIssuedAt(toDate(now))
+            .setExpiration(toDate(now.plusSeconds(accessTokenExpTime)))
             .signWith(key)
             .compact()
 
@@ -76,8 +78,8 @@ class MyUserDetailsService(
         val refreshTokenEntity = refreshTokenRepository.findByUserEmail(userEmail)!!
 
         if(refreshTokenEntity.refreshTokenId != null &&
-            refreshTokenEntity.refreshTokenIssuedAt.plus(refreshTokenExpTime, ChronoUnit.SECONDS).isBefore(Instant.now())) {
-            logger.info("Refresh token of {} is already expired", userEmail);
+            refreshTokenEntity.refreshTokenIssuedAt.plus(refreshTokenExpTime, ChronoUnit.SECONDS).isBefore(LocalDateTime.now())) {
+            logger.info("{}のリフレッシュトークンは有効期限が切れています。", userEmail);
             return false
         }
 
@@ -90,7 +92,7 @@ class MyUserDetailsService(
         refreshTokenRepository.findByUserEmail(userEmail)
             ?.let { refreshTokenEntity ->
                 refreshTokenEntity.refreshToken = bCryptPasswordEncoder.encode(refreshToken)
-                refreshTokenEntity.refreshTokenIssuedAt = Instant.now()
+                refreshTokenEntity.refreshTokenIssuedAt = LocalDateTime.now()
                 refreshTokenRepository.save(refreshTokenEntity)
             } ?: (
                 refreshTokenRepository.save(
@@ -98,7 +100,7 @@ class MyUserDetailsService(
                         0,
                         userEmail,
                         bCryptPasswordEncoder.encode(refreshToken),
-                        Instant.now()
+                        LocalDateTime.now()
                     )
                 )
             )
@@ -108,6 +110,13 @@ class MyUserDetailsService(
     @Throws(UsernameNotFoundException::class)
     fun findByUserEmail(userEmail: String): User {
         return userRepository.findByUserEmail(userEmail)
-            ?: throw UsernameNotFoundException("User not found:[$userEmail]")
+            ?: throw UsernameNotFoundException("[$userEmail]のメールアドレスのユーザーが見つかりませんでした。")
+    }
+
+    private fun toDate(localDateTime: LocalDateTime): Date? {
+        val zone = ZoneId.systemDefault()
+        val zonedDateTime = ZonedDateTime.of(localDateTime, zone)
+        val instant = zonedDateTime.toInstant()
+        return Date.from(instant)
     }
 }
