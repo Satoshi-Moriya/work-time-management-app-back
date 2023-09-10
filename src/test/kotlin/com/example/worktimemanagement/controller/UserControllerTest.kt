@@ -42,200 +42,9 @@ class UserControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build()
     }
 
+    // POST「/auth/signup」のテスト
     @Test
-    fun `UserのuserEmail不正な値が入っている場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "Invalid-Email", "mockPass1235", "2023-07-01 09:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのuserEmailに空文字が入っている場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "", "mockPass1235", "2023-07-01 09:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのuserPasswordが空文字の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "", "2023-07-01 09:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのuserPasswordが8文字未満の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "test123", "2023-07-01 09:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの年のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "223-09-31 03:59:59", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの月が13の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-13-01 09:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの月のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-9-31 03:59:59", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの日が32の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-32 09:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの日のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-1 03:59:59", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの時間が24の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-31 24:00:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの時間のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-01 3:59:59", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの分が60の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-31 23:60:00", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの分のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-01 03:9:59", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの秒が60の場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-31 23:59:60", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの秒のフォーマットが崩れていた場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-01 03:59:9", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `UserのcreatedAtの年月日と時間の間のスペースがない場合、ステータス400が返ってくる（POST「／auth／signup」を利用して確認）`() {
-        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-0103:59:09", null, null)
-        val mapper = ObjectMapper()
-        val json = mapper.writeValueAsString(mockUserRequest)
-
-        mockMvc.perform(post("/auth/signup")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `POST「／auth／signup」が正常に呼ばれたとき、ステータス201が返ってくる`() {
+    fun `POST「／auth／signup」が正常に呼ばれたとき、ステータス200が返ってくる`() {
         val mockUserRequest = User(1, "mockEmail@test.com", "mockPass1235", "2023-07-01 09:00:00", null, null)
         val mapper = ObjectMapper()
         val json = mapper.writeValueAsString(mockUserRequest)
@@ -243,7 +52,7 @@ class UserControllerTest {
         mockMvc.perform(post("/auth/signup")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-            .andExpect(status().isCreated)
+            .andExpect(status().isOk)
     }
 
     @Test
@@ -258,7 +67,199 @@ class UserControllerTest {
 
         verify(mockUserService, times(1)).save(mockUserRequest)
     }
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのuserEmailに不正な値が入っている場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "Invalid-Email", "mockPass1235", "2023-07-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
 
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのuserEmailに空文字が入っている場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "", "mockPass1235", "2023-07-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのuserPasswordが空文字の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "", "2023-07-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのuserPasswordが8文字未満の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "test123", "2023-07-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの年のフォーマットが崩れていた場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "223-09-31 03:59:59", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの月が13の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-13-01 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの月のフォーマットが崩れていた場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-9-31 03:59:59", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの日が32の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-32 09:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの日のフォーマットが崩れていた場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-1 03:59:59", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの時間が24の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-31 24:00:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの時間のフォーマットが崩れていた場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-01 3:59:59", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの分が60の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-31 23:60:00", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの分のフォーマットが崩れていた場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-01 03:9:59", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの秒が60の場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-31 23:59:60", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの秒のフォーマットが崩れていた場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-01 03:59:9", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `POST「／auth／signup」が呼ばれたとき、UserのcreatedAtの年月日と時間の間のスペースがない場合、ステータス400が返ってくる`() {
+        val mockUserRequest = User(1, "mock@test.com", "mockTest1234", "2023-12-0103:59:09", null, null)
+        val mapper = ObjectMapper()
+        val json = mapper.writeValueAsString(mockUserRequest)
+
+        mockMvc.perform(post("/auth/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(status().isBadRequest)
+    }
+
+    // GET「/auth/user」のテスト
     @Test
     @WithMockUser(username = "test@example.com")
     fun `GET「／auth／user」が呼ばれたとき、ステータス200が返ってくる`() {
@@ -284,6 +285,7 @@ class UserControllerTest {
         verify(mockUserService, times(1)).findByUserEmail(mockEmail)
     }
 
+    // DELETE「/users/{userId}」のテスト
     @Test
     fun `DELETE「／users／{userId}」が呼ばれたとき、userServiceのdeleteByUserId()が呼ばれる`() {
 
@@ -292,12 +294,14 @@ class UserControllerTest {
         verify(mockUserService, times(1)).deleteByUserId(1)
     }
 
+    // GET「/users/userId/email」のテスト
     @Test
     fun `GET「／users／userId／email」が正常に呼ばれたとき、ステータス200が返ってくる`() {
         mockMvc.perform(get("/users/1/email"))
             .andExpect(status().isOk)
     }
 
+    // PUT「/users/userId/email」のテスト
     @Test
     fun `PUT「／users／userId／email」が正常に呼ばれたとき、ステータス200が返ってくる`() {
         val mockIncludeNewEmailRequest = IncludeNewEmailRequest(1, "mockEmail@test.com", "mockPass1234")
@@ -336,6 +340,7 @@ class UserControllerTest {
         verify(mockUserService, times(1)).updateUserEmail(mockIncludeNewEmailRequest)
     }
 
+    // PUT「/users/userId/password」のテスト
     @Test
     fun `PUT「／users／userId／password」が呼ばれたとき、ステータス200が返ってくる`() {
         val mockUpdateUserPasswordRequest = UpdateUserPasswordRequest(1, "mockCurrentPass1234", "mockNewPass1234")

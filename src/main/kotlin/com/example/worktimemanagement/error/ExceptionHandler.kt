@@ -44,4 +44,20 @@ class ExceptionHandler: ResponseEntityExceptionHandler() {
     private fun createErrorResponseBody(exception: ExpiredRefreshTokenException, request: WebRequest): CustomResponse {
         return CustomResponse(exception.message)
     }
+
+    @ExceptionHandler(EmailAlreadyExistsException::class)
+    fun handleEmailAlreadyExistsException(exception: EmailAlreadyExistsException, request: WebRequest): ResponseEntity<Any>? {
+        val headers = HttpHeaders()
+
+        return handleExceptionInternal(
+            exception,
+            createErrorResponseBody(exception, request),
+            headers,
+            HttpStatus.BAD_REQUEST,
+            request)
+    }
+
+    private fun createErrorResponseBody(exception: EmailAlreadyExistsException, request: WebRequest): CustomResponse {
+        return CustomResponse(exception.message)
+    }
 }

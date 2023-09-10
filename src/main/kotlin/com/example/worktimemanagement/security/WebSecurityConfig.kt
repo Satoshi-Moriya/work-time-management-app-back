@@ -38,7 +38,7 @@ class WebSecurityConfig(private val myUserDetailsService: MyUserDetailsService) 
             }
             .csrf {
                 csrf -> csrf
-                    .ignoringRequestMatchers("/auth/signup", "/csrf")
+                    .ignoringRequestMatchers("/csrf")
             }
             .addFilter(MyAuthenticationFilter(authenticationManager, bCryptPasswordEncoder(), myUserDetailsService))
             .addFilter(MyAuthorizationFilter(authenticationManager))
