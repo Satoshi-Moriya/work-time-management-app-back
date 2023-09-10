@@ -4,8 +4,10 @@ import com.example.worktimemanagement.dto.AuthUserResponse
 import com.example.worktimemanagement.dto.IncludeNewEmailRequest
 import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
+import com.example.worktimemanagement.error.EmailAlreadyExistsException
 import com.example.worktimemanagement.error.InvalidPasswordException
 import com.example.worktimemanagement.repository.UserRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -32,15 +34,19 @@ class UserServiceImpl(
 ): UserService {
 
     override fun save(user: User) {
-        val hashPassUser = User(
-            user.userId,
-            user.userEmail,
-            bCryptPasswordEncoder.encode(user.userPassword),
-            user.createdAt,
-            null,
-            null
-        )
-        userRepository.save(hashPassUser)
+        try {
+            val hashPassUser = User(
+                user.userId,
+                user.userEmail,
+                bCryptPasswordEncoder.encode(user.userPassword),
+                user.createdAt,
+                null,
+                null
+            )
+            userRepository.save(hashPassUser)
+        } catch (e: DataIntegrityViolationException) {
+            throw  EmailAlreadyExistsException("既に登録されているメールアドレスです。")
+        }
     }
 
     override fun findByUserEmail(userEmail: String): AuthUserResponse {

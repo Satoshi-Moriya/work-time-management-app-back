@@ -5,6 +5,7 @@ import com.example.worktimemanagement.dto.AuthUserResponse
 import com.example.worktimemanagement.dto.IncludeNewEmailRequest
 import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
+import com.example.worktimemanagement.error.EmailAlreadyExistsException
 import com.example.worktimemanagement.error.InvalidPasswordException
 import com.example.worktimemanagement.repository.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,6 +16,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.*
 
@@ -39,6 +41,18 @@ class UserServiceTest {
         userService.save(mockUserRequest)
 
         verify(mockUserRepository, times(1)).save(mockIncludeHashPassUserRequest)
+    }
+
+    @Test
+    fun `save()が実行され、例外が発生した時、「既に登録されているメールアドレスです。」が返る` () {
+        val mockUserRequest = User(1, "mockEmail@test.com", "mockPass1235", "2023-07-01 09:00:00", null, null)
+        val mockUserHashPassRequest = User(1, "mockEmail@test.com", "mockHashPass1235", "2023-07-01 09:00:00", null, null)
+
+        `when`(bCryptPasswordEncoder.encode("mockPass1235")).thenReturn("mockHashPass1235")
+        `when`(mockUserRepository.save(mockUserHashPassRequest)).thenThrow(DataIntegrityViolationException::class.java)
+
+        val e = assertThrows(EmailAlreadyExistsException::class.java) { userService.save(mockUserRequest) }
+        assertEquals(e.message, "既に登録されているメールアドレスです。")
     }
 
     @Test

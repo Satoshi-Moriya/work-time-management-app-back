@@ -19,9 +19,10 @@ import org.springframework.web.bind.annotation.*
 class UserController(val userService: UserService) {
 
     @PostMapping("/auth/signup")
-    @ResponseStatus(HttpStatus.CREATED)
-    fun register(@RequestBody @Validated user: User) {
+    @ResponseStatus(HttpStatus.OK)
+    fun register(@RequestBody @Validated user: User): ResponseEntity<CustomResponse> {
         userService.save(user)
+        return ResponseEntity.ok(CustomResponse("アカウント登録が完了しました。"))
     }
 
     @GetMapping("/auth/user")
