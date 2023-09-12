@@ -24,10 +24,6 @@ class MyAuthenticationFilter(
     private val myUserDetailsService: MyUserDetailsService
 ): UsernamePasswordAuthenticationFilter() {
 
-    companion object {
-        private val accessTokenSecret = System.getenv("MY_SECRET_KEY")
-    }
-
     init {
         this.authenticationManager = authenticationManager
         this.bCryptPasswordEncoder = bCryptPasswordEncoder
