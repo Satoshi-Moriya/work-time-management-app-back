@@ -68,8 +68,6 @@ class MyAuthenticationFilter(
         ))
         val accessTokenCookie = createCookie("accessToken", accessToken)
         val refreshTokenCookie = createCookie("refreshToken", refreshToken)
-//        ToDo httpsの通信のみ有効にするっぽいので本番では適応させる
-//          cookie.secure = true
         res.addCookie(accessTokenCookie)
         res.addCookie(refreshTokenCookie)
     }
@@ -78,6 +76,8 @@ class MyAuthenticationFilter(
         return Cookie(name, value).apply {
             path = "/"
             isHttpOnly = true
+            // ToDo httpsの通信のみ有効にするっぽいので本番では適応させる
+            secure = true
         }
     }
 }
