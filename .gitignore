@@ -38,3 +38,6 @@ out/
 
 ### env ###
 docker/.env
+
+### key file ###
+*.p12
