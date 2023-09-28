@@ -40,7 +40,7 @@ class MyAuthorizationFilter(authenticationManager: AuthenticationManager): Basic
     private fun getAuthentication(request: HttpServletRequest): UsernamePasswordAuthenticationToken? {
         val token = request.cookies.find { it.name == "accessToken" }?.value
         if (token != null) {
-            val user: String = Jwts.parserBuilder()
+            val user: String? = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)

@@ -5,18 +5,25 @@ import com.example.worktimemanagement.dto.CustomResponse
 import com.example.worktimemanagement.dto.IncludeNewEmailRequest
 import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
+import com.example.worktimemanagement.security.MyControllerAuth
 import com.example.worktimemanagement.service.UserService
 import jakarta.validation.constraints.NotNull
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
+
 @RestController
 @CrossOrigin
-class UserController(val userService: UserService) {
+class UserController(
+    val userService: UserService,
+    val myControllerAuth: MyControllerAuth
+) {
 
     @PostMapping("/auth/signup")
     @ResponseStatus(HttpStatus.OK)
@@ -42,6 +49,7 @@ class UserController(val userService: UserService) {
 
     @GetMapping("/users/{userId}/email")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("#userId == @myControllerAuth.isLoginUserId(principal)")
     fun fetchUserEmail(@PathVariable @NotNull userId: Int): String {
         return userService.fetchUserEmail(userId)
     }
