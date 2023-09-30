@@ -4,6 +4,7 @@ import com.example.worktimemanagement.dto.AuthUserResponse
 import com.example.worktimemanagement.dto.IncludeNewEmailRequest
 import com.example.worktimemanagement.dto.UpdateUserPasswordRequest
 import com.example.worktimemanagement.entity.User
+import com.example.worktimemanagement.security.MyControllerAuth
 import com.example.worktimemanagement.service.UserService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
@@ -33,6 +34,9 @@ class UserControllerTest {
 
     @Mock
     private lateinit var mockUserService: UserService
+
+    @Mock
+    private lateinit var myControllerAuth: MyControllerAuth
 
     @InjectMocks
     private lateinit var userController: UserController

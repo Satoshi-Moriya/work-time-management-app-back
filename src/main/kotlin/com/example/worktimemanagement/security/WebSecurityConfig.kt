@@ -1,6 +1,7 @@
 package com.example.worktimemanagement.security
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -24,6 +25,9 @@ class WebSecurityConfig(private val myUserDetailsService: MyUserDetailsService) 
 
     @Autowired
     private lateinit var myLogoutSuccessHandler: MyLogoutSuccessHandler
+
+    @Value("\${cors.allowedOrigins}")
+    private lateinit var allowedOrigins: String
 
     @Throws(Exception::class)
     @Bean
@@ -69,8 +73,7 @@ class WebSecurityConfig(private val myUserDetailsService: MyUserDetailsService) 
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL)
         corsConfiguration.addAllowedHeader(CorsConfiguration.ALL)
         corsConfiguration.addExposedHeader(HttpHeaders.AUTHORIZATION)
-//        corsConfiguration.addAllowedOrigin("http://localhost:3000")
-        corsConfiguration.addAllowedOrigin("https://www.jikan-kanri-kun.com")
+        corsConfiguration.addAllowedOrigin(allowedOrigins)
         corsConfiguration.allowCredentials = true
         val corsSource = UrlBasedCorsConfigurationSource()
         corsSource.registerCorsConfiguration("/**", corsConfiguration)
